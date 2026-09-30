@@ -1,11 +1,24 @@
 *.iml
+<<<<<<< HEAD
 .gradle
 .kotlin
 /local.properties
 .idea
+=======
+.gradle/
+.kotlin/
+.idea/
+**/build/
+local.properties
+>>>>>>> 53450a0 (Apply ColorOS17 customization and MD3E UI)
 .DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-.runtime/
+captures/
+.externalNativeBuild/
+.cxx/
+outputs/
+work/
+*.apk
+*.idsig
+*.jks
+*.keystore
+.env

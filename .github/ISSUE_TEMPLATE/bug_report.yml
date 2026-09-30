@@ -1,15 +1,19 @@
-name: 收不到推送 / 问题报告
-description: 推送不到达、FCM 连接异常或模块报错
-labels: [bug]
+name: 推送或界面问题
+description: 报告 ColorOS17 定制版的问题
+title: "[问题] "
 body:
+<<<<<<< HEAD
   - type: markdown
     attributes:
       value: |
         提交前请先按 [如何提交问题与日志](https://github.com/ByteJuno/fcmfix-coloros/blob/master/docs/report-issue.md) 自查并导出报告。
         FCM Diagnostics 亮屏也一直 disconnected 时，通常是网络问题（DNS 或端口），模块无法解决。
+=======
+>>>>>>> 53450a0 (Apply ColorOS17 customization and MD3E UI)
   - type: input
-    id: device
+    id: versions
     attributes:
+<<<<<<< HEAD
       label: 机型与完整系统版本
       placeholder: 一加 15 PLK110_17.0.0.102(CN01)
     validations:
@@ -53,19 +57,27 @@ body:
     attributes:
       label: 网络环境
       placeholder: Wi‑Fi / 移动数据；是否使用代理，代理软件名称
+=======
+      label: 系统、模块和 LSPosed 版本
+>>>>>>> 53450a0 (Apply ColorOS17 customization and MD3E UI)
     validations:
       required: true
   - type: textarea
-    id: detail
+    id: reproduction
     attributes:
-      label: 问题描述
-      description: 测试应用、复现步骤、发送测试消息的大致时间
+      label: 复现步骤与发生时间
+      description: 请注明目标应用、是否重启、息屏及后台状态
     validations:
       required: true
   - type: textarea
-    id: report
+    id: logs
     attributes:
+<<<<<<< HEAD
       label: 报告与截图
       description: 拖入导出的报告、FCM Diagnostics 截图、LSPosed 作用域截图
     validations:
       required: true
+=======
+      label: 日志与截图
+      description: 请检查并去除隐私信息，不要上传签名密钥
+>>>>>>> 53450a0 (Apply ColorOS17 customization and MD3E UI)

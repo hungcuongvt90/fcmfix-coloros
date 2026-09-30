@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # The hook side runs inside system_server and Battery (com.oplus.athena). Keep it exactly as
 # written: no renaming, no removal, so hook behaviour and stack traces in the module log stay
 # the same as in a debug build. R8 only shrinks the app UI and the libraries.
@@ -11,4 +12,10 @@
 -dontwarn io.github.libxposed.api.**
 
 # Readable line numbers in crash reports.
+=======
+# API 102 loads this class by name from META-INF/xposed/java_init.list.
+-keep class io.github.zopulus.ffc.XposedMain { public *; }
+
+# Keep useful hook failure stack traces.
+>>>>>>> 53450a0 (Apply ColorOS17 customization and MD3E UI)
 -keepattributes SourceFile,LineNumberTable

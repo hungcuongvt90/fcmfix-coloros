@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+<<<<<<< HEAD
     <color name="screenBackground">#F1F4F9</color>
 </resources>
+=======
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>
+</resources>
+>>>>>>> 53450a0 (Apply ColorOS17 customization and MD3E UI)

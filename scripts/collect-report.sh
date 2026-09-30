@@ -9,7 +9,12 @@ else
 fi
 [ $# -gt 0 ] && shift
 GMS=com.google.android.gms
+<<<<<<< HEAD
 MODULE=io.github.artifical0.fcmfix.coloros
+=======
+MODULE=io.github.zopulus.ffc
+GMS_UID=$(pm list packages -U "$GMS" | grep "^package:$GMS " | grep -o 'uid:[0-9]*' | cut -d: -f2)
+>>>>>>> 53450a0 (Apply ColorOS17 customization and MD3E UI)
 
 section() { echo; echo "== $1"; }
 
@@ -34,6 +39,7 @@ report() {
   version=$(dumpsys package "$MODULE" | grep versionName)
   if [ -n "$version" ]; then echo "$version" | sed -n 1p; else echo "未安装 $MODULE"; fi
 
+<<<<<<< HEAD
   # ColorOS keeps these in its own networking_control service (/data/oplus/common/networkingcontrolpolicy.xml),
   # not in AOSP netpolicy. Transaction 2 is getUidPolicy(uid).
   section "Google 核心包联网策略（0 不限制，1 禁移动数据，2 禁 Wi-Fi，4 全部禁止）"
@@ -50,6 +56,11 @@ report() {
     fi
   done
   echo "oplus_user_change_gms_network_control=$(settings get global oplus_user_change_gms_network_control)"
+=======
+  section "GMS 联网策略（无匹配行不代表已确认无限制；同时检查 Oplus 策略与 Hook 日志）"
+  echo "gms uid=$GMS_UID"
+  [ -n "$GMS_UID" ] && dumpsys netpolicy | grep -E "UID=$GMS_UID( |$)"
+>>>>>>> 53450a0 (Apply ColorOS17 customization and MD3E UI)
 
   section "GMS 待机分组（10/20/30 正常，40 为 RARE 受限）"
   am get-standby-bucket "$GMS"
@@ -57,9 +68,20 @@ report() {
   section "google_restric_info（1 表示系统判定 Google 受限）"
   settings get secure google_restric_info
 
+<<<<<<< HEAD
   # Lines are "<list>,<package>,<uid>"; FCMFix keeps GMS/GSF on the Doze whitelist.
   section "Google 核心包 Doze 白名单"
   dumpsys deviceidle whitelist | grep -E ",(com\.google\.android\.gms|com\.google\.android\.gsf)," || echo "GMS/GSF 不在 Doze 白名单"
+=======
+  section "FCMFix / ColorOS Google 限制日志"
+  logcat -d | grep -iE "fcmfix|GoogleController|OplusGoogle"
+  section "Doze 白名单"
+  dumpsys deviceidle whitelist
+
+  section "Google 唤醒闹钟"
+  dumpsys alarm | grep -iE "google|gms|restrict|wakeup"
+} > "$OUT" 2>&1
+>>>>>>> 53450a0 (Apply ColorOS17 customization and MD3E UI)
 
   # Battery reads Settings.Secure deepsleep_switch_state (1 = deep sleep may cut the network) and
   # logs every cut/restore to deepsleepRcd.txt, alternating with deepsleepRcdAnother.txt.

@@ -5,9 +5,15 @@ buildscript {
         mavenCentral()
     }
     dependencies {
+<<<<<<< HEAD
         classpath "com.android.tools.build:gradle:8.13.0"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.21"
         classpath "org.jetbrains.kotlin:compose-compiler-gradle-plugin:2.2.21"
+=======
+        classpath "com.android.tools.build:gradle:9.4.1"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.20"
+        classpath "org.jetbrains.kotlin:compose-compiler-gradle-plugin:2.4.20"
+>>>>>>> 53450a0 (Apply ColorOS17 customization and MD3E UI)
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files

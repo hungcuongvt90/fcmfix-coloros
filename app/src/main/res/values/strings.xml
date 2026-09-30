@@ -1,4 +1,10 @@
 <resources>
+<<<<<<< HEAD
     <string name="app_name">FCMFix ColorOS</string>
     <string name="module_description">修复 ColorOS 16/17 对 FCM 后台唤醒、广播投递和联网的限制</string>
 </resources>
+=======
+    <string name="app_name">Fcmfix for ColorOS17</string>
+    <string name="module_description">优化fcm在ColorOS的使用体验，仅适配ColorOS17</string>
+</resources>
+>>>>>>> 53450a0 (Apply ColorOS17 customization and MD3E UI)

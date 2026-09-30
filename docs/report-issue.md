@@ -1,5 +1,6 @@
-# 如何提交问题与日志
+# 问题反馈
 
+<<<<<<< HEAD
 先更新到最新版，再按下面三步收集信息，然后[提交 Issue](https://github.com/ByteJuno/fcmfix-coloros/issues/new/choose)。
 FCMFix 的日志在系统 logcat 中（标签 `fcmfix`），不在 LSPosed 管理器的“模块日志”里。
 
@@ -71,12 +72,21 @@ FCMFix 修复的是 GMS 收到消息之后被 ColorOS 拦截的问题，不能�
 ### 测试网络连通性
 
 在出问题的网络下，用 Termux 执行（先 `pkg install curl dnsutils`）：
+=======
+请在 [本仓库 Issues](https://github.com/zopulus/fcmfix-coloros17/issues) 描述系统版本、模块版本、LSPosed 版本、目标应用、发生时间与复现步骤。
+
+先确认仅启用一个 FCMFix、系统与电池作用域已启用并重启、应用已加入允许名单、应用通知权限开启。可在首页“Google Play 服务诊断”检查 FCM 连接。
+
+仓库 `scripts/collect-report.sh` 只读取系统状态与日志：
+>>>>>>> 53450a0 (Apply ColorOS17 customization and MD3E UI)
 
 ```sh
-nslookup mtalk.google.com
-curl -v --max-time 5 telnet://mtalk.google.com:5228
+adb push scripts/collect-report.sh /sdcard/Download/collect-report.sh
+adb shell su -c 'sh /sdcard/Download/collect-report.sh'
+adb pull /sdcard/Download/fcmfix-report.txt
 ```
 
+<<<<<<< HEAD
 - `nslookup` 返回的不是 Google 地址（常见为 `142.250.x.x`、`74.125.x.x`、`172.217.x.x`、`108.177.x.x`）：DNS 被污染，修改 hosts 或换 DNS 通常就能恢复；
 - `curl` 输出 `Connected to ...`：端口可连通；超时或 `Connection refused`：端口被封或 IP 不对，只能走代理。
 
@@ -144,3 +154,8 @@ ColorOS 17 的按应用断网挂在 `fw_INPUT` / `fw_OUTPUT` 及其子链上，�
 | 以上都正常，但 FCM Diagnostics 一直 disconnected | 网络问题（DNS 污染或端口被封） |
 | 日志中有 `FCM trusted sender`（GMS 已发出），但没有通知 | 看“目标应用”一栏：`POST_NOTIFICATIONS` 为 `granted=false`、`importance` 为 `0` 或 `NONE`、渠道 `mImportance=0` 表示通知被关闭；`stopped=true` 且没有 `Start proc` 表示应用未被拉起，请提交 Issue |
 | 有 `Successful broadcast`、进程也被拉起，但通知仍延迟 | 看有没有 `Oplus FCM delivery window`、`Oplus FCM Hans-freeze bypass`、`Oplus FCM socket-close bypass`。二次冻结或断网只是可能原因之一，还要结合应用内部同步、消息优先级和网络判断 |
+=======
+日志可能包含包名、网络地址和其他应用信息，请检查并删除隐私内容后再上传。不要上传签名密钥、账号信息或未经处理的完整系统日志。
+
+Hook 成功与实际推送成功需要分别验证；FCM 网络连接失败和目标应用被系统拦截也需要分别定位。
+>>>>>>> 53450a0 (Apply ColorOS17 customization and MD3E UI)
