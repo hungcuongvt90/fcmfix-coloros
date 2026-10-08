@@ -13,8 +13,6 @@ import io.github.zopulus.ffc.libxposed.XposedHelpers;
 import io.github.zopulus.ffc.util.IceboxUtils;
 import io.github.zopulus.ffc.util.FcmTrust;
 
-import static com.kooritea.fcmfix.xposed.OplusHooks.runHook;
-
 public class BroadcastFix extends XposedModule {
     private static final java.util.Set<String> installed = java.util.concurrent.ConcurrentHashMap.newKeySet();
     public static boolean isInstalled() {
@@ -25,11 +23,6 @@ public class BroadcastFix extends XposedModule {
 
     public BroadcastFix(ClassLoader classLoader) {
         super(classLoader);
-<<<<<<< HEAD:app/src/main/java/com/kooritea/fcmfix/xposed/BroadcastFix.java
-        runHook("broadcast entry point", this::startHookBroadcastEntryPoints);
-        runHook("broadcastIntentLocked", this::startHookBroadcastIntentLocked);
-        runHook("broadcast deoptimize", this::deoptimizeBroadcastCallers);
-=======
         try{
             this.startHookBroadcastEntryPoints();
         }catch (Throwable e) {
@@ -45,7 +38,6 @@ public class BroadcastFix extends XposedModule {
         }catch (Throwable e) {
             printLog("hook error broadcast deoptimize:" + e.getMessage());
         }
->>>>>>> 53450a0 (Apply ColorOS17 customization and MD3E UI):app/src/main/java/io/github/zopulus/ffc/xposed/BroadcastFix.java
     }
 
     /**
@@ -88,7 +80,6 @@ public class BroadcastFix extends XposedModule {
             // AMS delegates to BroadcastController; do not install a second entry there.
             if (hookCount > 0) break;
         }
-        if (hookCount == 0) throw new NoSuchMethodError("broadcastIntentWithFeature(Intent)");
         printLog("broadcast entry hooks active: " + hookCount);
     }
 
@@ -135,9 +126,10 @@ public class BroadcastFix extends XposedModule {
         }
 
         if (hookCount == 0) {
-            throw new NoSuchMethodError("broadcastIntentLocked hook 位置查找失败，fcmfix将不会工作。");
+            printLog("broadcastIntentLocked hook 位置查找失败，fcmfix将不会工作。");
+        } else {
+            printLog("broadcastIntentLocked hooks active: " + hookCount);
         }
-        printLog("broadcastIntentLocked hooks active: " + hookCount);
     }
 
     /**
@@ -162,7 +154,6 @@ public class BroadcastFix extends XposedModule {
                 if (callers.contains(method.getName()) && XposedBridge.deoptimize(method)) count++;
             }
         }
-        if (count == 0) throw new IllegalStateException("no broadcast caller deoptimized");
         printLog("broadcast callers deoptimized: " + count);
     }
 
@@ -213,17 +204,20 @@ public class BroadcastFix extends XposedModule {
                     if (!allowed || intent == null || !FcmTrust.matches(intent.getAction(), target)) return;
                     if (entry) {
                         printLog("FCM trusted sender: uid=" + callerUid + ", target=" + target, true);
-                        SelfCheckCollector.recordPush(target);
-                        OplusProxyFix.beginFcmDeliveryWindow(target);
+                        int targetUid = OplusProxyFix.beginFcmDeliveryWindow(target);
+                        boolean activationAttempted = false;
                         if (getBooleanConfig("includeIceBoxDisableApp", false)
                                 && !IceboxUtils.isAppEnabled(context, target)) {
+                            activationAttempted = true;
                             // Activation uses the module's SDK permission and finishes before dispatch.
                             // Wait is bounded; no original Binder call is retained or replayed.
                             if (!IceboxUtils.activateBeforeDelivery(context, target)) {
                                 logOnce("Ice Box activation failed or timed out: " + target);
                             }
                         }
-                        OplusProxyFix.unfreeze(target);
+                        // Activation may wait; refresh attribution after that wait.
+                        if (activationAttempted) OplusProxyFix.unfreeze(target);
+                        else OplusProxyFix.unfreeze(target, targetUid);
                     }
                     intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
                     // Framework AppOps arguments are deliberately left untouched.
@@ -236,8 +230,5 @@ public class BroadcastFix extends XposedModule {
         });
         installed.add(stage + ":" + describeMethod(method));
     }
-<<<<<<< HEAD:app/src/main/java/com/kooritea/fcmfix/xposed/BroadcastFix.java
-=======
 
->>>>>>> 53450a0 (Apply ColorOS17 customization and MD3E UI):app/src/main/java/io/github/zopulus/ffc/xposed/BroadcastFix.java
 }
