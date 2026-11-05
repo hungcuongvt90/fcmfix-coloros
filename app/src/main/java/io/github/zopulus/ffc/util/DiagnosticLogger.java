@@ -3,7 +3,7 @@ package io.github.zopulus.ffc.util;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
-/** Rate-limits diagnostic lines; important lines bypass the limiter. Never throws into a hook. */
+/** Rate-limited local diagnostics whose sinks cannot interrupt an intercepted method. */
 public final class DiagnosticLogger {
     private final DiagnosticLogLimiter limiter = new DiagnosticLogLimiter();
     private final Consumer<String> localLog;

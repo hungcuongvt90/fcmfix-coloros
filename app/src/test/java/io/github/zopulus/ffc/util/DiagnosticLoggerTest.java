@@ -7,7 +7,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.Assert.*;
 
 public class DiagnosticLoggerTest {
-    @Test public void duplicateDiagnosticsAreWrittenOnce() {
+    @Test public void diagnosticsAreWrittenLocally() {
+        List<String> local = new ArrayList<>();
+        List<Throwable> errors = new ArrayList<>();
+        DiagnosticLogger logger = new DiagnosticLogger(local::add, errors::add);
+        logger.log("early boot", true, 0);
+        assertEquals(List.of("early boot"), local);
+        assertTrue(errors.isEmpty());
+    }
+
+    @Test public void duplicateDiagnosticsAreSuppressed() {
         List<String> local = new ArrayList<>();
         List<Throwable> errors = new ArrayList<>();
         DiagnosticLogger logger = new DiagnosticLogger(local::add, errors::add);
@@ -22,19 +31,25 @@ public class DiagnosticLoggerTest {
         List<Throwable> errors = new ArrayList<>();
         DiagnosticLogger logger = new DiagnosticLogger(local::add, errors::add);
         for (int i = 0; i < 100; i++) logger.log("success " + i, true, 0);
-        assertEquals(DiagnosticLogLimiter.MAX_BURST, local.size());
+        int before = local.size();
         for (int i = 0; i < 100; i++) logger.log("config failure", false, 0);
-        assertEquals(DiagnosticLogLimiter.MAX_BURST + 100, local.size());
+        assertEquals(DiagnosticLogLimiter.MAX_BURST, before);
+        assertEquals(before + 100, local.size());
         assertTrue(errors.isEmpty());
     }
 
-    @Test public void brokenLocalSinkIsReportedOnlyOnce() {
+    @Test public void localFailureIsReportedOnceAndLaterLogsStillWork() {
+        List<String> local = new ArrayList<>();
         AtomicInteger failures = new AtomicInteger();
-        DiagnosticLogger logger = new DiagnosticLogger(
-                ignored -> { throw new IllegalStateException("local sink"); }, e -> failures.incrementAndGet());
-        logger.log("one", false, 0);
-        logger.log("two", true, 1);
+        DiagnosticLogger logger = new DiagnosticLogger(text -> {
+            if (text.equals("broken")) throw new IllegalStateException("local sink");
+            local.add(text);
+        }, error -> failures.incrementAndGet());
+        logger.log("broken", false, 0);
+        logger.log("broken", false, 1);
+        logger.log("later", true, 2);
         assertEquals(1, failures.get());
+        assertEquals(List.of("later"), local);
     }
 
     @Test public void brokenLogSinksCannotEscapeIntoHook() {
