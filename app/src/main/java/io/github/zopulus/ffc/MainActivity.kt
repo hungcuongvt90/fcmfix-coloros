@@ -61,6 +61,7 @@ import io.github.zopulus.ffc.util.IceboxUtils
 import io.github.libxposed.service.XposedService
 import io.github.libxposed.service.XposedServiceHelper
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -86,8 +87,7 @@ data class FcmfixConfig(
 data class InstalledApp(
     val packageName: String,
     val label: String,
-    val icon: Bitmap,
-    val hasFcmReceiver: Boolean
+    val icon: Bitmap
 )
 
 enum class ConfigSource {
@@ -146,6 +146,7 @@ class MainActivity : ComponentActivity() {
         set(value) { ConfigMemory.editGeneration = value }
     private val uiState = ConfigMemory.state
     private var installedApps = androidx.compose.runtime.mutableStateOf<List<InstalledApp>>(emptyList())
+    private var appsLoadingJob: Job? = null
     private var launcherIconHidden = androidx.compose.runtime.mutableStateOf(false)
     private val launcherAliasComponent by lazy {
         ComponentName(packageName, "$packageName.LauncherAlias")
@@ -440,8 +441,9 @@ class MainActivity : ComponentActivity() {
         .put(KEY_ROOT_DEEP_SLEEP_NETWORK_WHITELIST, rootDeepSleepNetworkWhitelist)
 
     private fun loadInstalledApps() {
+        if (appsLoadingJob?.isActive == true) return
         uiState.value = uiState.value.copy(appsLoading = true, appsLoadFailed = false)
-        lifecycleScope.launch {
+        appsLoadingJob = lifecycleScope.launch {
             val result = withContext(Dispatchers.IO) {
                 runCatching { queryInstalledApps() }
             }
@@ -449,7 +451,6 @@ class MainActivity : ComponentActivity() {
                 installedApps.value = apps
                 uiState.value = uiState.value.copy(appsLoading = false, appsLoadFailed = false)
             }.onFailure { error ->
-                installedApps.value = emptyList()
                 uiState.value = uiState.value.copy(appsLoading = false, appsLoadFailed = true)
                 Log.e(TAG, "Could not read installed applications", error)
             }
@@ -470,8 +471,7 @@ class MainActivity : ComponentActivity() {
                 InstalledApp(
                     packageName = packageInfo.packageName,
                     label = applicationInfo.loadLabel(packageManager).toString(),
-                    icon = drawableToBitmap(applicationInfo.loadIcon(packageManager)),
-                    hasFcmReceiver = true
+                    icon = drawableToBitmap(applicationInfo.loadIcon(packageManager))
                 )
             } catch (error: Throwable) {
                 Log.w(TAG, "Skipping ${packageInfo.packageName}", error)
