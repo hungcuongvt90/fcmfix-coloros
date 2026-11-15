@@ -1,9 +1,9 @@
 package io.github.zopulus.ffc.ui
 
 internal enum class AppFilter(val title: String) {
-    ALL("全部"),
-    ALLOWED("已开启"),
-    DISABLED("已关闭")
+    ALL("Overall Minimum Value"),
+    ALLOWED("Available"),
+    DISABLED("Closed")
 }
 
 /** Freeze grouping for a visit, and filter membership until the next selection. */

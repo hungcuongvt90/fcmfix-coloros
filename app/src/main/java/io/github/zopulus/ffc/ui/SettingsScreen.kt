@@ -54,61 +54,61 @@ fun SettingsScreen(
         snackbarHost = { SnackbarHost(snackbar) },
         topBar = {
             TopAppBar(
-                title = { Text("设置") },
+                title = { Text("settings.ini") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = "返回") }
+                    IconButton(onClick = onBack) { Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = "&Back\\tF7") }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
             )
         },
     ) { padding ->
         LazyColumn(Modifier.padding(padding).fillMaxSize(), contentPadding = PaddingValues(bottom = 24.dp)) {
-            item { SectionHeader("推送") }
+            item { SectionHeader("Pushing") }
             item {
                 GroupCard {
                     SwitchRow(
-                        R.drawable.ic_notifications, "阻止应用停止时自动清除通知",
-                        "放行的应用被系统停止时，保留它已经发出的通知",
+                        R.drawable.ic_notifications, "Prevent automatic clearing of notifications when the app is stopped",
+                        "Retain notifications already sent when the release application is stopped by the system",
                         config?.keepNotifications == true, editable, actions::setKeepNotifications,
                     )
                     RowDivider()
                     SwitchRow(
-                        R.drawable.ic_icebox, "允许唤醒被冰箱冻结的应用",
-                        "推送到达时通过冰箱 SDK 解冻应用。触发解冻的这条消息可能收不到，要等下一条消息或应用自己同步",
+                        R.drawable.ic_icebox, "Allow waking up apps frozen by the fridge",
+                        "Unfreeze the app via the Freezer SDK when the push notification arrives. The message that triggers the unfreezing may not be received. You will need to wait for the next message or for the app to synchronize itself.",
                         config?.iceBox == true, editable, actions::setIceBox,
                     )
                 }
             }
-            item { SectionHeader("应用") }
+            item { SectionHeader("Applications") }
             item {
                 GroupCard {
                     val auto = config?.autoAllowFcm == true
                     ActionRow(
-                        R.drawable.ic_select_all, "放行所有包含 FCM 的应用",
+                        R.drawable.ic_select_all, "Allow all apps that contain FCM",
                         when {
-                            auto -> "已开启自动放行，不需要再全部放行"
-                            fcmApps == null -> "正在读取应用列表…"
-                            else -> "共 ${fcmApps.size} 个；之后安装的应用不会自动放行"
+                            auto -> "Automatic release is enabled. No need to release all."
+                            fcmApps == null -> "Reading app list..."
+                            else -> "Total ${fcmApps.size}; apps installed after this will not be allowed automatically"
                         },
                         enabled = editable && !auto && fcmApps != null,
                     ) { confirmAllowAll = true }
                 }
             }
-            item { SectionHeader("关于") }
+            item { SectionHeader("For") }
             item {
                 GroupCard {
                     ListItem(
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         leadingContent = { LevelIcon(Level.INFO) },
                         headlineContent = { Text("FCMFix ColorOS ${state.versionName}", fontWeight = FontWeight.Medium) },
-                        supportingContent = { Text("基于上游 fcmfix 53。LSPosed 作用域：系统框架 + 电池") },
+                        supportingContent = { Text("Based on upstream fcmfix 53. LSPosed Scope: System Framework + Battery") },
                     )
                     RowDivider()
-                    ActionRow(R.drawable.ic_code, "项目主页", "github.com/ByteJuno/fcmfix-coloros", trailing = R.drawable.ic_open_in_new) {
+                    ActionRow(R.drawable.ic_code, "Study Homepage", "github.com/ByteJuno/fcmfix-coloros", trailing = R.drawable.ic_open_in_new) {
                         nav.openUrl(PROJECT_URL)
                     }
                     RowDivider()
-                    ActionRow(R.drawable.ic_guide, "如何提交问题与日志", "推送收不到时的排查步骤", trailing = R.drawable.ic_open_in_new) {
+                    ActionRow(R.drawable.ic_guide, "How to Submit Issues and Logs", "Troubleshooting Steps for When Push Notifications Are Not Received", trailing = R.drawable.ic_open_in_new) {
                         nav.openUrl(REPORT_GUIDE_URL)
                     }
                 }
@@ -118,15 +118,15 @@ fun SettingsScreen(
     if (confirmAllowAll && fcmApps != null) {
         AlertDialog(
             onDismissRequest = { confirmAllowAll = false },
-            title = { Text("放行所有包含 FCM 的应用？") },
-            text = { Text("将放行 ${fcmApps.size} 个应用。之后安装的应用需要再手动放行，或开启“自动放行包含 FCM 的应用”。") },
+            title = { Text("Allow all apps that contain FCM?") },
+            text = { Text("${fcmApps.size} apps will be allowed. Apps installed after this will need to be allowed manually, or you can enable \"Automatically allow apps that contain FCM.\"") },
             confirmButton = {
                 TextButton(onClick = {
                     confirmAllowAll = false
                     actions.allowAllFcm()
-                }) { Text("放行") }
+                }) { Text("Release") }
             },
-            dismissButton = { TextButton(onClick = { confirmAllowAll = false }) { Text("取消") } },
+            dismissButton = { TextButton(onClick = { confirmAllowAll = false }) { Text("CANCEL") } },
         )
     }
 }

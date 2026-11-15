@@ -78,8 +78,8 @@ fun StatusTab(state: AppUiState, actions: AppActions, nav: Navigation, modifier:
         title = { Text("FCMFix") },
         modifier = modifier,
         actions = {
-            IconButton(onClick = actions::refreshStatus) { Icon(painterResource(R.drawable.ic_refresh), contentDescription = "刷新") }
-            IconButton(onClick = nav.openSettings) { Icon(painterResource(R.drawable.ic_settings), contentDescription = "设置") }
+            IconButton(onClick = actions::refreshStatus) { Icon(painterResource(R.drawable.ic_refresh), contentDescription = "Refresh") }
+            IconButton(onClick = nav.openSettings) { Icon(painterResource(R.drawable.ic_settings), contentDescription = "settings.ini") }
         },
     ) { padding ->
         PullToRefreshBox(
@@ -108,7 +108,7 @@ fun StatusTab(state: AppUiState, actions: AppActions, nav: Navigation, modifier:
                         }
                     }
                 }
-                item { SectionHeader("反馈问题") }
+                item { SectionHeader("Feedback questions ") }
                 item { FeedbackCard(onCopy = nav.copy, onExport = actions::startExport) }
             }
         }
@@ -134,7 +134,7 @@ fun SummaryCard(summary: Summary?, modifier: Modifier = Modifier) {
             Spacer(Modifier.width(16.dp))
             Column(Modifier.weight(1f)) {
                 Text(
-                    summary?.title ?: "正在检查…",
+                    summary?.title ?: "Checking",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -155,7 +155,7 @@ fun SummaryCard(summary: Summary?, modifier: Modifier = Modifier) {
 private fun FeedbackCard(onCopy: () -> Unit, onExport: () -> Unit) {
     GroupCard {
         Text(
-            "反馈问题时请附上自查结果。有 Root 时可以导出完整报告，其中还有系统日志。",
+            "Please attach the results of your self-check when reporting issues. When rooted, you can export a full report, which also includes system logs.",
             Modifier.padding(start = 20.dp, end = 20.dp, top = 16.dp),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -167,12 +167,12 @@ private fun FeedbackCard(onCopy: () -> Unit, onExport: () -> Unit) {
             OutlinedButton(onClick = onCopy, modifier = Modifier.weight(1f)) {
                 Icon(painterResource(R.drawable.ic_copy), contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
-                Text("复制结果")
+                Text("Copy Result")
             }
             FilledTonalButton(onClick = onExport, modifier = Modifier.weight(1f)) {
                 Icon(painterResource(R.drawable.ic_report), contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
-                Text("导出完整报告")
+                Text("Export Full Report")
             }
         }
     }

@@ -42,7 +42,7 @@ import com.kooritea.fcmfix.util.SelfCheck.Level
 
 val LocalIconSource = compositionLocalOf<IconSource> { IconSource.None }
 
-/** "5 分钟前"; screenshot tests replace it to get the same text on every run. */
+/** "5 minutes ago"; screenshot tests replace it to get the same text on every run. */
 val LocalRelativeTime = staticCompositionLocalOf<(Long) -> String> {
     { time -> DateUtils.getRelativeTimeSpanString(time).toString() }
 }

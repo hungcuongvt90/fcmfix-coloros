@@ -26,10 +26,10 @@ public final class FcmSockets {
      */
     public static String stall(InetDiag.Socket socket) {
         if (socket.unacked > 0 && socket.retransmits >= STUCK_RETRANSMITS) {
-            return "发出的数据没有得到回应（已连续重传 " + socket.retransmits + " 次）";
+            return "No response to the transmitted data (retransmitted consecutively" + socket.retransmits + " times";
         }
         if (socket.lastDataRecv >= SILENT_MS) {
-            return "约 " + SelfCheck.duration(socket.lastDataRecv) + "没有收到任何数据（不计休眠时间）";
+            return "ca." + SelfCheck.duration(socket.lastDataRecv) + "No data received (excluding sleep time)";
         }
         return null;
     }

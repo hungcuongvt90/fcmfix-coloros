@@ -1,9 +1,0 @@
-<resources>
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:style/Theme.Material.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="android:colorAccent">@color/colorAccent</item>
-        <item name="android:windowActionModeOverlay">true</item>
-    </style>
-
-</resources>

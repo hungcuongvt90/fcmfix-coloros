@@ -249,8 +249,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application), A
         val current = mutableConfig.value
         if (service == null || current == null) {
             message(
-                if (connection.value == ModuleConnection.State.Missing) "模块未激活，无法保存：请先在 LSPosed 中启用 FCMFix"
-                else "LSPosed 配置正在加载，请稍后再试",
+                if (connection.value == ModuleConnection.State.Missing) "Module not activated and cannot be saved: Please enable FCMFix in LSPosed first."
+                else "LSPosed configuration is loading. Please try again later.",
             )
             return
         }
@@ -259,7 +259,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application), A
         try {
             val live = ConfigStore.save(app, service, next)
             mutableConfig.value = next
-            if (!live) message("配置已保存；Android 14 以下需重启手机生效")
+            if (!live) message("Configuration saved; for Android versions below 14, a phone restart is required for changes to take effect.")
             refreshSoon()
         } catch (e: Throwable) {
             Log.e(TAG, "updateConfig", e)
@@ -277,18 +277,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application), A
         try {
             service.requestScope(scopes, object : XposedService.OnScopeEventListener {
                 override fun onScopeRequestApproved(approved: List<String>) {
-                    message("作用域已添加，重启手机后生效")
+                    message("Scope added. It will take effect after restarting the phone.")
                     viewModelScope.launch { refreshStatus() }
                 }
 
                 override fun onScopeRequestFailed(reason: String) {
-                    message("申请失败：$reason。请在 LSPosed 中手动勾选")
+                    message("Request failed: $reason. Please check manually in LSPosed")
                 }
             })
-            message("已向 LSPosed 申请，请在弹出的通知中确认")
+            message("A request has been sent to LSPosed. Please confirm in the pop-up notification.")
         } catch (e: Throwable) {
             Log.w(TAG, "requestScope", e)
-            message("申请失败，请在 LSPosed 中手动勾选作用域")
+            message("Application failed. Please manually select the scope in LSPosed.")
         }
     }
 
@@ -311,7 +311,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application), A
             // The module's own log lines outlive logcat; fetch them first, then append them.
             val checkText = report.value?.toText().orEmpty()
             val logs = StatusQuery.query(app, HookStatus.EXTRA_LOGS)
-            val appendix = "\n== 自查结果\n" + checkText + "\n" + ReportExporter.logsText(logs)
+            val appendix = "\\n== Self-Check Results\\n" + checkText + "\n" + ReportExporter.logsText(logs)
             mutableExport.value = try {
                 val file = ReportExporter.export(app, packageName, appendix)
                 lastReport = file
@@ -332,14 +332,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application), A
         viewModelScope.launch {
             val error = withContext(Dispatchers.IO) {
                 try {
-                    val out = app.contentResolver.openOutputStream(uri) ?: throw IOException("无法写入")
+                    val out = app.contentResolver.openOutputStream(uri) ?: throw IOException("Unable to write on")
                     out.use { output -> report.inputStream().use { it.copyTo(output) } }
                     null
                 } catch (e: IOException) {
                     e.message ?: e.toString()
                 }
             }
-            message(if (error == null) "已保存" else "保存失败：$error")
+            message(if (error == null) "Sudah disimpan" else "Save failed: $error")
         }
     }
 

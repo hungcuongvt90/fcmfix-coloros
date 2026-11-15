@@ -47,10 +47,10 @@ import com.kooritea.fcmfix.ui.theme.eventColor
 import com.kooritea.fcmfix.util.SelfCheck.EventKind
 
 enum class EventFilter(val label: String, val kinds: Set<EventKind>) {
-    FCM("FCM 连接", setOf(EventKind.FCM_UP, EventKind.FCM_RECONNECT, EventKind.FCM_DOWN)),
-    NETWORK("网络", setOf(EventKind.NETWORK)),
-    DEVICE("亮灭屏与 Doze", setOf(EventKind.SCREEN, EventKind.DOZE)),
-    PUSH("推送", setOf(EventKind.PUSH)),
+    FCM("FCM Connection", setOf(EventKind.FCM_UP, EventKind.FCM_RECONNECT, EventKind.FCM_DOWN)),
+    NETWORK("networks", setOf(EventKind.NETWORK)),
+    DEVICE("Screen On/Off and Doze", setOf(EventKind.SCREEN, EventKind.DOZE)),
+    PUSH("Pushing", setOf(EventKind.PUSH)),
 }
 
 data class TimelineDay(val label: String, val events: List<Row>)
@@ -68,7 +68,7 @@ fun timeline(rows: List<Row>): Timeline {
     for (row in rows) {
         when (row.kind) {
             RowKind.SECTION -> {
-                // The first section is the page title, "最近事件"; the others are days.
+                // The first section is the page title, "No upcoming event"; the others are days.
                 if (!seenTitle) {
                     seenTitle = true
                     continue
@@ -93,12 +93,12 @@ fun TimelineTab(state: AppUiState, actions: AppActions, nav: Navigation, modifie
     val rows = state.report?.rows(Page.EVENTS).orEmpty()
     val timeline = remember(rows) { timeline(rows) }
     TabScaffold(
-        title = { Text("时间线") },
+        title = { Text("track") },
         modifier = modifier,
         scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
         actions = {
-            IconButton(onClick = actions::refreshStatus) { Icon(painterResource(R.drawable.ic_refresh), contentDescription = "刷新") }
-            IconButton(onClick = nav.openSettings) { Icon(painterResource(R.drawable.ic_settings), contentDescription = "设置") }
+            IconButton(onClick = actions::refreshStatus) { Icon(painterResource(R.drawable.ic_refresh), contentDescription = "Refresh") }
+            IconButton(onClick = nav.openSettings) { Icon(painterResource(R.drawable.ic_settings), contentDescription = "settings.ini") }
         },
     ) { padding ->
         PullToRefreshBox(
@@ -130,7 +130,7 @@ fun TimelineTab(state: AppUiState, actions: AppActions, nav: Navigation, modifie
                         }
                     }
                     rows.isEmpty() -> item {
-                        NoteText("系统框架没有响应，看不到时间线。请先在“状态”页处理模块问题：确认已勾选作用域，并在勾选后重启过手机")
+                        NoteText("The system framework is not responding, and the timeline is not visible. Please first address the module issue on the \"Status\" page: Confirm that the scope has been selected, and that the phone has been restarted after selection.")
                     }
                     else -> {
                         timeline.intro.forEach { item { NoteText(it) } }

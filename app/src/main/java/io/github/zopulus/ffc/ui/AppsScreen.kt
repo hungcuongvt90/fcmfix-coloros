@@ -92,7 +92,7 @@ fun appItems(state: AppUiState): List<AppItem> {
 }
 
 enum class AppFilter(val label: String) {
-    ALL("全部"), FCM("包含 FCM"), ALLOWED("已放行"), ATTENTION("需要注意");
+    ALL("All"), FCM("Includes FCM"), ALLOWED("Released"), ATTENTION("Needs Attention");
 
     fun matches(item: AppItem): Boolean = when (this) {
         ALL -> true
@@ -108,9 +108,9 @@ fun AppItem.matches(query: String): Boolean {
     return app.label.lowercase(Locale.ROOT).contains(q) || app.packageName.lowercase(Locale.ROOT).contains(q)
 }
 
-/** "5 分钟前收到推送". */
+/** "Received push notification 5 minutes ago". */
 @Composable
-fun pushText(lastPush: Long): String = LocalRelativeTime.current(lastPush) + "收到推送"
+fun pushText(lastPush: Long): String = LocalRelativeTime.current(lastPush) + "Push notification received"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -135,7 +135,7 @@ fun AppsTab(state: AppUiState, actions: AppActions, nav: Navigation, modifier: M
                     value = query,
                     onValueChange = { query = it },
                     modifier = Modifier.fillMaxWidth().focusRequester(focus),
-                    placeholder = { Text("搜索应用名称或包名") },
+                    placeholder = { Text("Search for app name or package name") },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     colors = TextFieldDefaults.colors(
@@ -146,7 +146,7 @@ fun AppsTab(state: AppUiState, actions: AppActions, nav: Navigation, modifier: M
                     ),
                 )
             } else {
-                Text("应用")
+                Text("Applications")
             }
         },
         modifier = modifier,
@@ -156,17 +156,17 @@ fun AppsTab(state: AppUiState, actions: AppActions, nav: Navigation, modifier: M
                 IconButton(onClick = {
                     searching = false
                     query = ""
-                }) { Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = "关闭搜索") }
+                }) { Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = "Close Search") }
             }
         },
         actions = {
             if (searching) {
                 if (query.isNotEmpty()) {
-                    IconButton(onClick = { query = "" }) { Icon(painterResource(R.drawable.ic_close), contentDescription = "清除") }
+                    IconButton(onClick = { query = "" }) { Icon(painterResource(R.drawable.ic_close), contentDescription = "Clear") }
                 }
             } else {
-                IconButton(onClick = { searching = true }) { Icon(painterResource(R.drawable.ic_search), contentDescription = "搜索") }
-                IconButton(onClick = nav.openSettings) { Icon(painterResource(R.drawable.ic_settings), contentDescription = "设置") }
+                IconButton(onClick = { searching = true }) { Icon(painterResource(R.drawable.ic_search), contentDescription = "Cari") }
+                IconButton(onClick = nav.openSettings) { Icon(painterResource(R.drawable.ic_settings), contentDescription = "settings.ini") }
             }
         },
     ) { padding ->
@@ -194,7 +194,7 @@ fun AppsTab(state: AppUiState, actions: AppActions, nav: Navigation, modifier: M
                     }
                     shown.isEmpty() -> item {
                         Text(
-                            if (filter == AppFilter.ATTENTION && query.isBlank()) "放行的应用都没有问题" else "没有匹配的应用",
+                            if (filter == AppFilter.ATTENTION && query.isBlank()) "There are no issues with the approved applications." else "No matching apps",
                             Modifier.fillMaxWidth().padding(48.dp),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -223,8 +223,8 @@ private fun AutoAllowCard(checked: Boolean, enabled: Boolean, onChange: (Boolean
         ListItem(
             modifier = Modifier.clickable(enabled = enabled) { onChange(!checked) },
             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-            headlineContent = { Text("自动放行包含 FCM 的应用", fontWeight = FontWeight.Medium) },
-            supportingContent = { Text("新安装的应用也会自动放行；在列表中关闭的应用会被排除") },
+            headlineContent = { Text("Automatically allow apps that contain FCM", fontWeight = FontWeight.Medium) },
+            supportingContent = { Text("Newly installed apps will also be allowed automatically; apps that are turned off in the list will be excluded.") },
             trailingContent = { Switch(checked = checked, onCheckedChange = onChange, enabled = enabled) },
         )
     }
@@ -325,10 +325,10 @@ fun AppDetailContent(
                     Spacer(Modifier.height(6.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         if (item.app.includeFcm) {
-                            Pill("包含 FCM", MaterialTheme.colorScheme.tertiaryContainer, MaterialTheme.colorScheme.onTertiaryContainer)
+                            Pill("Includes FCM", MaterialTheme.colorScheme.tertiaryContainer, MaterialTheme.colorScheme.onTertiaryContainer)
                         }
                         if (item.auto) {
-                            Pill("自动放行", MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.colorScheme.onSecondaryContainer)
+                            Pill("Automatic Clearance", MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.colorScheme.onSecondaryContainer)
                         }
                     }
                 }
@@ -339,7 +339,7 @@ fun AppDetailContent(
             ListItem(
                 modifier = Modifier.clickable(enabled = editable) { onToggle(!item.allowed) },
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                headlineContent = { Text("放行", fontWeight = FontWeight.Medium) },
+                headlineContent = { Text("Release", fontWeight = FontWeight.Medium) },
                 supportingContent = { Text(allowSummary(item)) },
                 trailingContent = { Switch(checked = item.allowed, onCheckedChange = onToggle, enabled = editable) },
             )
@@ -347,34 +347,34 @@ fun AppDetailContent(
         val check = item.check
         val verdict = item.verdict
         if (check != null && verdict != null) {
-            SectionHeader("开机以来")
+            SectionHeader("Since power-on")
             GroupCard {
-                DetailRow(verdict.notify.level, "通知", verdict.notify.text, verdict.notify.hint)
+                DetailRow(verdict.notify.level, "wpbakery notice", verdict.notify.text, verdict.notify.hint)
                 verdict.bucket?.let {
                     RowDivider()
-                    DetailRow(it.level, "待机分组", it.text.removePrefix("待机分组："), it.hint)
+                    DetailRow(it.level, "Standby Group", it.text.removePrefix("Standby Group:"), it.hint)
                 }
                 RowDivider()
                 DetailRow(
-                    if (check.lastPush > 0) Level.OK else Level.INFO, "推送",
-                    if (check.lastPush == 0L) "还没有收到推送" else pushText(check.lastPush) + " · 共 ${check.pushCount} 次",
+                    if (check.lastPush > 0) Level.OK else Level.INFO, "Pushing",
+                    if (check.lastPush == 0L) "No push notifications received yet" else pushText(check.lastPush) + "· ${check.pushCount} times in total",
                     null,
                 )
                 RowDivider()
                 DetailRow(
-                    Level.INFO, "进程",
+                    Level.INFO, "Process",
                     when {
-                        check.running -> "运行中"
-                        check.stopped -> "已停止，推送时由模块拉起"
-                        else -> "未运行"
+                        check.running -> "In operation"
+                        check.stopped -> "Stopped, pulled up by the module when pushed"
+                        else -> "not running smoothly."
                     },
                     null,
                 )
             }
-            NoteText("“收到推送”表示 GMS 已把消息交给该应用。收到了推送却没有弹出通知，问题通常在应用自己的通知设置或应用本身")
+            NoteText("\"Push received\" means that GMS has delivered the message to the app. If a push notification is received but no notification pops up, the problem is usually with the app's own notification settings or the app itself.")
         } else {
             NoteText(
-                if (item.allowed) "系统框架还没有报告这个应用，稍后刷新“状态”再看" else "放行后，这里会显示通知状态和推送记录",
+                if (item.allowed) "The system framework has not yet reported this app. Refresh the \"Status\" later to check again." else "After approval, the notification status and push records will be displayed here",
                 Modifier.padding(top = 8.dp),
             )
         }
@@ -385,13 +385,13 @@ fun AppDetailContent(
             OutlinedButton(onClick = onOpenSettings, modifier = Modifier.weight(1f)) {
                 Icon(painterResource(R.drawable.ic_open_in_new), contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
-                Text("应用设置")
+                Text("Apply Settings")
             }
             if (item.allowed && exportable) {
                 FilledTonalButton(onClick = onExport, modifier = Modifier.weight(1f)) {
                     Icon(painterResource(R.drawable.ic_report), contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(8.dp))
-                    Text("导出报告")
+                    Text("Export Report")
                 }
             }
         }
@@ -399,10 +399,10 @@ fun AppDetailContent(
 }
 
 private fun allowSummary(item: AppItem): String = when {
-    item.auto -> "由“自动放行包含 FCM 的应用”放行，关闭后会被排除"
-    item.allowed -> "收到推送时，模块会唤醒并放行这个应用"
-    item.app.includeFcm -> "放行后，收到推送时模块会唤醒这个应用"
-    else -> "没有检测到 FCM 组件，放行通常没有作用"
+    item.auto -> "Allowed by \"Automatically allow apps containing FCM.\" It will be excluded after being disabled."
+    item.allowed -> "When a push notification is received, the module wakes up and allows the app to run."
+    item.app.includeFcm -> "After allowing, the module will wake up this app when a push notification is received."
+    else -> "No FCM component detected; release usually has no effect."
 }
 
 @Composable

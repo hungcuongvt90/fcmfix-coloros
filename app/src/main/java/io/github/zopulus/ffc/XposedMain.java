@@ -61,7 +61,7 @@ public class XposedMain extends io.github.libxposed.api.XposedModule {
             XposedBridge.log("[fcmfix] start hook " + name);
             task.run();
         } catch (Throwable e) {
-            XposedBridge.log("[fcmfix] " + name + " 初始化失败: " + e.getMessage());
+            XposedBridge.log("[fcmfix] " + name + "Initialization failed" + e.getMessage());
         }
     }
 
@@ -72,12 +72,12 @@ public class XposedMain extends io.github.libxposed.api.XposedModule {
             Object systemContext = XposedHelpers.callMethod(activityThread, "getSystemContext");
             if (systemContext instanceof Context) {
                 XposedModule.initSystemServerContext((Context) systemContext);
-                XposedBridge.log("[fcmfix] 系统上下文初始化成功");
+                XposedBridge.log("[fcmfix] System context initialized successfully");
             } else {
-                XposedBridge.log("[fcmfix] 系统上下文获取失败: getSystemContext 返回 null");
+                XposedBridge.log("[fcmfix] System context retrieval failed: getSystemContext returned null");
             }
         } catch (Throwable e) {
-            XposedBridge.log("[fcmfix] 系统上下文初始化失败: " + e.getMessage());
+            XposedBridge.log("[fcmfix] System context initialization failed:" + e.getMessage());
         }
     }
 }

@@ -108,9 +108,9 @@ import io.github.zopulus.ffc.FcmfixUiState
 import io.github.zopulus.ffc.InstalledApp
 
 private enum class MainTab(val label: String, val appBarTitle: String = label) {
-    HOME("主页", "Fcmfix"),
-    APPS("应用"),
-    SETTINGS("设置")
+    HOME("Home", "Fcmfix"),
+    APPS("Applications"),
+    SETTINGS("settings.ini")
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -309,18 +309,18 @@ private fun HomeScreen(
             items = listOf(
                 HomeInfoItem(
                     icon = ImageVector.vectorResource(R.drawable.ic_notifications),
-                    title = "FCM 应用唤醒",
-                    summary = if (state.appsLoading && apps.isEmpty()) "正在读取应用列表" else if (state.appsLoadFailed && apps.isEmpty()) {
-                        "无法读取应用列表"
+                    title = "FCM App Wake-up",
+                    summary = if (state.appsLoading && apps.isEmpty()) "Reading app list..." else if (state.appsLoadFailed && apps.isEmpty()) {
+                        "Unable to read app list"
                     } else {
-                        "$allowedFcmCount / ${apps.size} 个应用已允许"
+                        "$allowedFcmCount / ${apps.size} apps allowed"
                     },
                     onClick = onOpenApps
                 ),
                 HomeInfoItem(
                     icon = ImageVector.vectorResource(R.drawable.ic_shield),
-                    title = "Google 联网保护",
-                    summary = "$enabledGoogleProtections / 2 项已启用",
+                    title = "Google Network Protection",
+                    summary = "$enabledGoogleProtections / 2 enabled",
                     onClick = onOpenSettings
                 )
             )
@@ -329,12 +329,12 @@ private fun HomeScreen(
             items = listOf(
                 HomeInfoItem(
                     icon = ImageVector.vectorResource(R.drawable.ic_troubleshoot),
-                    title = "Google Play 服务诊断",
+                    title = "Google Play Services Diagnostics",
                     onClick = onOpenDiagnostics
                 ),
                 HomeInfoItem(
                     icon = Icons.Outlined.Info,
-                    title = "关于 fcmfix",
+                    title = "About fcmfix",
                     onClick = onOpenProject
                 )
             )
@@ -384,7 +384,7 @@ private fun HomeStatusCard(connected: Boolean, versionName: String) {
                 }
             },
             supportingContent = {
-                Text("版本 $versionName", style = MaterialTheme.typography.bodyMedium)
+                Text("Version $versionName", style = MaterialTheme.typography.bodyMedium)
             },
             verticalAlignment = Alignment.CenterVertically,
             colors = ListItemDefaults.colors(
@@ -397,7 +397,7 @@ private fun HomeStatusCard(connected: Boolean, versionName: String) {
             elevation = ListItemDefaults.elevation(),
             content = {
                 Text(
-                    if (connected) "已激活" else "未激活",
+                    if (connected) "Activated" else "Unactivated",
                     style = MaterialTheme.typography.titleMediumEmphasized
                 )
             }
@@ -412,15 +412,15 @@ private fun SystemInfoCard() {
         val model = Build.MODEL.orEmpty().trim()
         val device = if (model.startsWith(manufacturer, ignoreCase = true)) model
             else listOf(manufacturer, model).filter(String::isNotBlank).joinToString(" ")
-        val abi = Build.SUPPORTED_ABIS.firstOrNull() ?: "未知"
+        val abi = Build.SUPPORTED_ABIS.firstOrNull() ?: "Unknown"
         val pageSize = runCatching { Os.sysconf(OsConstants._SC_PAGESIZE) }.getOrNull()
         val architecture = if (pageSize != null && pageSize > 0) {
             "$abi (${pageSize / 1024}K)"
         } else abi
         listOf(
-            "系统版本" to "${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})",
-            "设备" to device.ifBlank { "未知" },
-            "系统架构" to architecture
+            "System version" to "${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})",
+            "Equipment" to device.ifBlank { "Unknown" },
+            "Structure of the System" to architecture
         )
     }
     Surface(
@@ -509,7 +509,7 @@ private fun AppListActions(
             haptics.performHapticFeedback(HapticFeedbackType.VirtualKey)
             expanded = true
         }) {
-            Icon(ImageVector.vectorResource(R.drawable.ic_more_vert), contentDescription = "应用筛选与全选")
+            Icon(ImageVector.vectorResource(R.drawable.ic_more_vert), contentDescription = "Apply Filters and Select All")
         }
         DropdownMenuPopup(expanded = expanded, onDismissRequest = { expanded = false }) {
             DropdownMenuGroup(
@@ -538,7 +538,7 @@ private fun AppListActions(
                 SelectableDropdownMenuItem(
                     shapes = MenuDefaults.itemShape(index = 0, count = 1),
                     selected = apps.isNotEmpty() && apps.all { it.packageName in state.config.allowedPackages },
-                    text = { Text("全选") },
+                    text = { Text("Select all") },
                     enabled = !state.appsLoading && !state.appsLoadFailed && apps.isNotEmpty(),
                     selectedLeadingIcon = {
                         Icon(Icons.Filled.Check, contentDescription = null,
@@ -596,12 +596,12 @@ private fun AppsScreen(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
-                placeholder = { Text("搜索应用名称或包名") },
+                placeholder = { Text("Search for app name or package name") },
                 shape = MaterialTheme.shapes.extraLarge
             )
 
             Text(
-                "$allowedFcmCount / ${apps.size} 个已开启" + if (state.appsLoading) " · 刷新中" else "",
+                "$allowedFcmCount / ${apps.size} enabled" + if (state.appsLoading) "Refreshing…" else "",
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -609,7 +609,7 @@ private fun AppsScreen(
         }
 
         if (state.appsLoadFailed && apps.isNotEmpty()) {
-            TextButton(onClick = onReloadApps) { Text("刷新失败，点击重试") }
+            TextButton(onClick = onReloadApps) { Text("Refresh failed. Tap to retry.") }
         }
 
         when {
@@ -617,22 +617,22 @@ private fun AppsScreen(
                 CircularProgressIndicator()
             }
             state.appsLoadFailed && apps.isEmpty() -> EmptyAppsState(
-                title = "无法读取 FCM 应用",
-                message = "请检查应用列表权限后重试。",
+                title = "Unable to read FCM app",
+                message = "Please check the app list permissions and try again.",
                 onReload = onReloadApps
             )
             visibleApps.isEmpty() -> EmptyAppsState(
                 title = when {
-                    query.isNotBlank() -> "没有搜索结果"
-                    selectedFilter == AppFilter.ALLOWED -> "暂无已开启的 FCM 应用"
-                    selectedFilter == AppFilter.DISABLED -> "暂无已关闭的 FCM 应用"
-                    else -> "未检测到 FCM 应用"
+                    query.isNotBlank() -> "No Search Results"
+                    selectedFilter == AppFilter.ALLOWED -> "No FCM apps enabled yet"
+                    selectedFilter == AppFilter.DISABLED -> "No closed FCM apps"
+                    else -> "No FCM app detected"
                 },
                 message = when {
-                    query.isNotBlank() -> "检查应用名称或包名是否正确。"
-                    selectedFilter == AppFilter.ALLOWED -> "在列表中开启应用开关以允许 FCM 唤醒。"
-                    selectedFilter == AppFilter.DISABLED -> "当前 FCM 应用均已开启。"
-                    else -> "列表只显示包含 Firebase Cloud Messaging 接收器的应用。"
+                    query.isNotBlank() -> "Check if the app name or package name is correct."
+                    selectedFilter == AppFilter.ALLOWED -> "Turn on the app switch in the list to allow FCM wake-up."
+                    selectedFilter == AppFilter.DISABLED -> "All current FCM apps are enabled."
+                    else -> "The list only shows apps that contain Firebase Cloud Messaging receivers."
                 },
                 onReload = onReloadApps,
                 showButton = query.isBlank() && selectedFilter == AppFilter.ALL
@@ -675,7 +675,7 @@ private fun EmptyAppsState(
         Text(title, style = MaterialTheme.typography.titleMedium)
         Text(message, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         if (showButton) {
-            TextButton(onClick = onReload) { Text("刷新列表") }
+            TextButton(onClick = onReload) { Text("Refresh list") }
         }
     }
 }
@@ -702,7 +702,7 @@ private fun AppRow(
         leadingContent = {
             Image(
                 bitmap = app.icon.asImageBitmap(),
-                contentDescription = "${app.label} 图标",
+                contentDescription = "${app.label} Icon",
                 modifier = Modifier.size(46.dp).clip(RoundedCornerShape(14.dp))
             )
         },
@@ -745,18 +745,18 @@ private fun SettingsScreen(
         AlertDialog(
             onDismissRequest = { showRootWarning = false },
             icon = { Icon(Icons.Outlined.Warning, contentDescription = null) },
-            title = { Text("开启 Root 联网白名单？") },
+            title = { Text("Enable Root Network Whitelist?") },
             text = {
-                Text("UID 0 可能包含所有以 Root 身份运行的进程。开启后，这些进程都会进入 ColorOS 睡眠待机优化白名单。")
+                Text("UID 0 may contain all processes running as Root. Once enabled, these processes will be added to the ColorOS sleep standby optimization whitelist.")
             },
             confirmButton = {
                 TextButton(onClick = {
                     showRootWarning = false
                     if (config.deepSleepGoogleWhitelist) onConfigChange(config.copy(rootDeepSleepNetworkWhitelist = true))
-                }) { Text("开启") }
+                }) { Text("Open") }
             },
             dismissButton = {
-                TextButton(onClick = { showRootWarning = false }) { Text("取消") }
+                TextButton(onClick = { showRootWarning = false }) { Text("CANCEL") }
             }
         )
     }
@@ -764,20 +764,20 @@ private fun SettingsScreen(
     if (showHideLauncherIconWarning) {
         AlertDialog(
             onDismissRequest = { showHideLauncherIconWarning = false },
-            title = { Text("隐藏桌面图标？") },
+            title = { Text("Hide desktop icons?") },
             text = {
                 Text(
-                    "隐藏后，可从 LSPosed 模块页面打开 fcmfix，在设置中关闭此选项即可恢复桌面图标"
+                    "After hiding, you can open fcmfix from the LSPosed module page. Turn off this option in the settings to restore the desktop icon."
                 )
             },
             confirmButton = {
                 TextButton(onClick = {
                     showHideLauncherIconWarning = false
                     onLauncherIconHiddenChange(true)
-                }) { Text("隐藏") }
+                }) { Text("Hiding") }
             },
             dismissButton = {
-                TextButton(onClick = { showHideLauncherIconWarning = false }) { Text("取消") }
+                TextButton(onClick = { showHideLauncherIconWarning = false }) { Text("CANCEL") }
             }
         )
     }
@@ -789,12 +789,12 @@ private fun SettingsScreen(
     ) {
         item {
             SettingsGroup(
-                title = "ColorOS 联网保护",
+                title = "ColorOS Network Protection",
                 items = listOf(
                     SettingEntry(
                         icon = ImageVector.vectorResource(R.drawable.ic_bedtime),
-                        title = "睡眠待机优化白名单",
-                        summary = "将 GMS 和 GSF 加入联网白名单",
+                        title = "Sleep Standby Optimization Whitelist",
+                        summary = "Add GMS and GSF to the network whitelist",
                         checked = config.deepSleepGoogleWhitelist,
                         onCheckedChange = { enabled ->
                             onConfigChange(config.copy(
@@ -805,8 +805,8 @@ private fun SettingsScreen(
                     ),
                     SettingEntry(
                         icon = ImageVector.vectorResource(R.drawable.ic_terminal),
-                        title = "待机优化白名单 UID 0",
-                        summary = if (config.deepSleepGoogleWhitelist) "将 Root 下所有进程加入联网白名单" else "请先开启睡眠待机优化白名单",
+                        title = "Standby Optimization Whitelist UID 0",
+                        summary = if (config.deepSleepGoogleWhitelist) "Add all processes under Root to the network whitelist" else "Please enable the sleep standby optimization whitelist first",
                         checked = config.deepSleepGoogleWhitelist && config.rootDeepSleepNetworkWhitelist,
                         enabled = config.deepSleepGoogleWhitelist,
                         onCheckedChange = { enabled ->
@@ -816,8 +816,8 @@ private fun SettingsScreen(
                     ),
                     SettingEntry(
                         icon = ImageVector.vectorResource(R.drawable.ic_hourglass),
-                        title = "Doze 待机优化白名单",
-                        summary = "将 GMS 和 GSF 加入待机优化白名单",
+                        title = "Doze Standby Optimization Whitelist",
+                        summary = "Add GMS and GSF to the standby optimization whitelist",
                         checked = config.dozeGoogleWhitelist,
                         onCheckedChange = { enabled ->
                             onConfigChange(config.copy(dozeGoogleWhitelist = enabled))
@@ -829,26 +829,26 @@ private fun SettingsScreen(
 
         item {
             SettingsGroup(
-                title = "应用唤醒与通知",
+                title = "App Wake-up and Notifications",
                 items = listOf(
                     SettingEntry(
                         icon = ImageVector.vectorResource(R.drawable.ic_shield),
-                        title = "自动放行新应用",
-                        summary = "新安装的FCM应用默认开启",
+                        title = "Automatically approve new applications",
+                        summary = "Newly installed FCM apps are enabled by default",
                         checked = config.autoAllowNewApps,
                         onCheckedChange = { onConfigChange(config.copy(autoAllowNewApps = it)) }
                     ),
                     SettingEntry(
                         icon = ImageVector.vectorResource(R.drawable.ic_notifications_active),
-                        title = "保留应用停止前的通知",
-                        summary = "应用停止时保留它已有的通知",
+                        title = "Retain notifications prior to app termination",
+                        summary = "Retain existing notifications when the app stops",
                         checked = config.disableAutoCleanNotification,
                         onCheckedChange = { onConfigChange(config.copy(disableAutoCleanNotification = it)) }
                     ),
                     SettingEntry(
                         icon = ImageVector.vectorResource(R.drawable.ic_ac_unit),
-                        title = "允许唤醒冻结的应用",
-                        summary = "FCM 到达时尝试解除冻结状态",
+                        title = "Allow waking up frozen apps",
+                        summary = "Attempt to unfreeze when FCM arrives",
                         checked = config.includeIceBoxDisabledApps,
                         onCheckedChange = { onConfigChange(config.copy(includeIceBoxDisabledApps = it)) }
                     )
@@ -858,12 +858,12 @@ private fun SettingsScreen(
 
         item {
             SettingsGroup(
-                title = "其他设置",
+                title = "Other settings",
                 items = listOf(
                     SettingEntry(
                         icon = ImageVector.vectorResource(R.drawable.ic_visibility_off),
-                        title = "隐藏桌面图标",
-                        summary = "隐藏启动器中的 fcmfix 图标，不影响模块运行",
+                        title = "Hide Desktop Icons",
+                        summary = "Hide the fcmfix icon in the launcher without affecting the operation of the module",
                         checked = launcherIconHidden,
                         onCheckedChange = { hidden ->
                             if (hidden) showHideLauncherIconWarning = true
