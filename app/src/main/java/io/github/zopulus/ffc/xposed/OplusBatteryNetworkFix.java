@@ -270,7 +270,7 @@ public class OplusBatteryNetworkFix extends XposedModule {
                                 Context batteryContext = (Context) XposedHelpers.getObjectField(
                                         param.thisObject, "mContext");
                                 if (batteryContext == null) {
-                                    printLog("睡眠待机优化豁免未添加：Battery Context 不可用");
+                                    printLog("Sleep Standby Optimization Exemption Not Added: Battery Context Not Available");
                                     return;
                                 }
 
@@ -286,16 +286,16 @@ public class OplusBatteryNetworkFix extends XposedModule {
 
                                 if (!added.isEmpty()) {
                                     param.setResult(whitelist);
-                                    printLog("睡眠待机优化豁免追加：" + added);
+                                    printLog("Additional exemptions for sleep standby optimization:" + added);
                                 }
                             } catch (Throwable e) {
-                                printLog("睡眠待机优化豁免 Hook 失败：" + e.getMessage());
+                                printLog("Sleep standby optimization exemption hook failed:" + e.getMessage());
                             }
                         }
                     });
-            printLog("Battery 睡眠待机优化豁免 Hook 已安装");
+            printLog("Battery Sleep Standby Optimization Exemption Hook Installed");
         } catch (Throwable e) {
-            printLog("Battery 睡眠待机优化豁免 Hook 安装失败：" + e.getMessage());
+            printLog("Battery sleep standby optimization exemption hook installation failed:" + e.getMessage());
         }
     }
 
@@ -308,7 +308,7 @@ public class OplusBatteryNetworkFix extends XposedModule {
             GoogleProtection.addUid(whitelist, app.uid);
             if (whitelist.size() != previousSize) added.add(packageName + "=" + uid);
         } catch (PackageManager.NameNotFoundException e) {
-            printLog("未找到联网豁免目标：" + packageName);
+            printLog("No networking exemption target found:" + packageName);
         }
     }
 
@@ -328,11 +328,11 @@ public class OplusBatteryNetworkFix extends XposedModule {
                 });
                 hookedConstructors++;
             } catch (Throwable e) {
-                printLog("GoogleRestrictionController 构造函数 Hook 失败：" + e.getMessage());
+                printLog("GoogleRestrictionController constructor hook failed:" + e.getMessage());
             }
         }
         if (hookedConstructors > 0) {
-            printLog("Google 网络控制 Hook 已安装，构造函数数=" + hookedConstructors);
+            printLog("Google Network Control Hook installed, number of constructors =" + hookedConstructors);
         }
     }
 }

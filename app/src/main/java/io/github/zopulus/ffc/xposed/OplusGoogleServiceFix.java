@@ -294,7 +294,7 @@ public class OplusGoogleServiceFix extends XposedModule {
         if (managerClass == null) {
             if (GoogleNetworkCompat.isHansWithoutWeakSignal(
                     XposedHelpers.findClassIfExists("com.android.server.am.OplusHansManager", classLoader))) {
-                throw new NotApplicable("固件没有弱信号联网限制（没有 Hans 联网管控，Hans 中也没有弱信号场景）");
+                throw new NotApplicable("The firmware has no weak signal network connection restrictions (no Hans network connection control, and no weak signal scenarios in Hans).");
             }
             throw new NoClassDefFoundError(OPLUS_HANS_CONNECTIVITY_MANAGER);
         }
@@ -320,7 +320,7 @@ public class OplusGoogleServiceFix extends XposedModule {
         if (hooks == 0) {
             if (GoogleNetworkCompat.isLegacyConnectivityWithoutWeakSignal(
                     managerClass, android.os.Build.VERSION.SDK_INT)) {
-                throw new NotApplicable("已识别 ColorOS 16 蓝牙管控实现，未包含此弱信号限制功能");
+                throw new NotApplicable("ColorOS 16 Bluetooth control implementation has been identified, but it does not include this weak signal restriction feature.");
             }
             throw new NoSuchMethodError("isWeakSignalNetWhiteList(String)");
         }

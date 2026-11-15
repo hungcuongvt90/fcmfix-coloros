@@ -241,7 +241,7 @@ public class OplusStartupFix extends XposedModule {
         if (XposedHelpers.findClassIfExists(OPLUS_MALICIOUS_RESTRICT_POLICY, classLoader) != null) return;
         if (GoogleNetworkCompat.isActivityOnlyMaliciousCheck(
                 XposedHelpers.findClassIfExists(OPLUS_APP_STARTUP_MANAGER, classLoader))) {
-            throw new NotApplicable("固件的可疑组件名单只拦截 Activity 启动，不拦截广播和服务");
+            throw new NotApplicable("The list of suspicious components in the firmware only intercepts Activity launches and does not intercept broadcasts and services.");
         }
     }
 

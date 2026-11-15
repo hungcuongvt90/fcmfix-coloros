@@ -72,7 +72,7 @@ final class FcmConnectionMonitor {
     /** Why the current socket looks dead (FcmSockets.stall), and since when. */
     private static String stall;
     private static long stallSince;
-    /** netId -> "Wi‑Fi" / "移动数据" ..., to say which network GMS's socket is on. */
+    /** netId -> "Wi‑Fi" / "Mobile Data" ..., to say which network GMS's socket is on. */
     private static final Map<Integer, String> networkNames = new ConcurrentHashMap<>();
     private static volatile int defaultNetId = -1;
 
@@ -131,7 +131,7 @@ final class FcmConnectionMonitor {
                 public void onLost(Network network) {
                     last = null;
                     defaultNetId = -1;
-                    event(SelfCheck.EVENT_NETWORK + "断开");
+                    event(SelfCheck.EVENT_NETWORK + "detach");
                 }
             }, handler);
             // Every network, not only the default: GMS may keep its socket on another one (issue #6).
@@ -168,13 +168,13 @@ final class FcmConnectionMonitor {
         String name = networkNames.get(netId);
         if (name == null) name = "netId " + netId;
         int current = defaultNetId;
-        return address + "（" + name + (current > 0 && current != netId ? "，不是当前默认网络" : "") + "）";
+        return address + "（" + name + (current > 0 && current != netId ? ", not the current default network" : "") + "）";
     }
 
     private static String networkName(NetworkCapabilities capabilities) {
         String transport = capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ? "Wi‑Fi"
-                : capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ? "移动数据"
-                : capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) ? "以太网" : "其他";
+                : capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ? "Mobile Data"
+                : capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) ? "Ethernet" : "Other";
         return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN) ? "VPN" : transport;
     }
 
@@ -243,28 +243,28 @@ final class FcmConnectionMonitor {
             if (connectionKey != null) {
                 reconnects++;
                 String unseen = now - lastSeen > QUICK_RECONNECT_MS
-                        ? "，旧连接最后一次见到于 " + format(lastSeen) : "";
-                event(SelfCheck.EVENT_FCM_RECONNECT + " " + address + "（旧连接持续 "
+                        ? ", the old link was last seen on" + format(lastSeen) : "";
+                event(SelfCheck.EVENT_FCM_RECONNECT + " " + address + "(Old connection persists"
                         + SelfCheck.duration(lastSeen - since) + unseen + "）");
             } else if (lastSeen > 0) {
                 // The outage ended somewhere between the previous sample and now.
                 long outage = now - lastSeen;
                 longestOutage = Math.max(longestOutage, outage);
-                event(SelfCheck.EVENT_FCM_RESTORED + " " + address + "（断线约 " + SelfCheck.duration(outage) + "）");
+                event(SelfCheck.EVENT_FCM_RESTORED + " " + address + "(Connection lost for approximately" + SelfCheck.duration(outage) + "）");
             } else {
                 event(SelfCheck.EVENT_FCM_UP + " " + address);
             }
             since = now;
         } else if (key == null && connectionKey != null) {
             outages++;
-            event(SelfCheck.EVENT_FCM_DOWN + "（" + format(lastSeen) + " 时还在线，此前已连接 "
+            event(SelfCheck.EVENT_FCM_DOWN + "（" + format(lastSeen) + "Still online at , previously connected"
                     + SelfCheck.duration(lastSeen - since) + "）");
         }
         if (key != null && newStall != null && stall == null) {
             stallSince = now;
             event(SelfCheck.EVENT_FCM_STALL + " " + address + "：" + newStall);
         } else if (key != null && newStall == null && stall != null) {
-            event(SelfCheck.EVENT_FCM_RESTORED + " " + address + "（无响应约 " + SelfCheck.duration(now - stallSince) + "）");
+            event(SelfCheck.EVENT_FCM_RESTORED + " " + address + "(Approximately no response" + SelfCheck.duration(now - stallSince) + "）");
         }
         stall = key == null ? null : newStall;
         connectionKey = key;

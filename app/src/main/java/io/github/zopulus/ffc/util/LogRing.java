@@ -28,7 +28,7 @@ public final class LogRing {
     /** Oldest first; starts with a marker line when earlier lines were dropped. */
     public synchronized ArrayList<String> snapshot() {
         ArrayList<String> result = new ArrayList<>(lines.size() + 1);
-        if (dropped > 0) result.add("…（更早的 " + dropped + " 条已丢弃）");
+        if (dropped > 0) result.add("Previous" + dropped + "item(s) discarded)");
         result.addAll(lines);
         return result;
     }

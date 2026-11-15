@@ -41,17 +41,17 @@ public final class SelfCheck {
     /** Push lines, oldest first, kept apart so a busy chat cannot push the night out of KEY_EVENTS. */
     public static final String KEY_PUSH_EVENTS = "check.pushEvents";
     /** Timeline texts start with these; the app colours and filters lines by them. */
-    public static final String EVENT_PUSH = "推送 → ";
-    public static final String EVENT_FCM_UP = "FCM 已连接";
-    public static final String EVENT_FCM_RECONNECT = "FCM 重连";
-    public static final String EVENT_FCM_RESTORED = "FCM 恢复连接";
-    public static final String EVENT_FCM_DOWN = "FCM 断线";
-    public static final String EVENT_FCM_STALL = "FCM 无响应";
-    public static final String EVENT_NETWORK = "网络";
-    public static final String EVENT_SCREEN_ON = "亮屏";
-    public static final String EVENT_SCREEN_OFF = "熄屏";
-    public static final String EVENT_DOZE_ENTER = "进入深度 Doze";
-    public static final String EVENT_DOZE_EXIT = "退出深度 Doze";
+    public static final String EVENT_PUSH = "Pushing";
+    public static final String EVENT_FCM_UP = "FCM Connected";
+    public static final String EVENT_FCM_RECONNECT = "FCM Reconnection";
+    public static final String EVENT_FCM_RESTORED = "FCM Reconnection";
+    public static final String EVENT_FCM_DOWN = "FCM Disconnected";
+    public static final String EVENT_FCM_STALL = "FCM not responding";
+    public static final String EVENT_NETWORK = "networks";
+    public static final String EVENT_SCREEN_ON = "Screen On";
+    public static final String EVENT_SCREEN_OFF = "Screen Off";
+    public static final String EVENT_DOZE_ENTER = "Enter Deep Doze";
+    public static final String EVENT_DOZE_EXIT = "Exit Deep Doze";
 
     public enum EventKind { FCM_UP, FCM_RECONNECT, FCM_DOWN, NETWORK, SCREEN, DOZE, PUSH, OTHER }
 
@@ -92,51 +92,51 @@ public final class SelfCheck {
 
     /** Oplus networking_control policy: a bitmask of 1 no mobile, 2 no Wi-Fi, 4 reject all. */
     public static Verdict gmsPolicy(int policy) {
-        if (policy < 0) return new Verdict(Level.UNKNOWN, "无法查询", "当前固件可能没有该服务，可导出完整报告查看");
-        if (policy == 0) return new Verdict(Level.OK, "不限制", null);
-        String text = (policy & 4) != 0 ? "全部禁止"
-                : (policy & 3) == 3 ? "禁止 Wi‑Fi 和移动数据"
-                : (policy & 2) != 0 ? "禁止 Wi‑Fi" : "禁止移动数据";
+        if (policy < 0) return new Verdict(Level.UNKNOWN, "Failed to check the data", "The current firmware may not have this service. You can export the full report to view it.");
+        if (policy == 0) return new Verdict(Level.OK, "No Limit", null);
+        String text = (policy & 4) != 0 ? "All Prohibited"
+                : (policy & 3) == 3 ? "Disable Wi‑Fi and Mobile Data"
+                : (policy & 2) != 0 ? "Disable Wi‑Fi" : "Mobile Data Disabled";
         return new Verdict(Level.FAIL, text + "（" + policy + "）",
-                "确认已勾选电池作用域并重启；仍未恢复请按“提交问题”指南中“流量管理里没有 Google 入口”一节处理");
+                "Confirm that the battery scope has been selected and restart the device. If the issue persists, follow the instructions in the \"No Google Entry in Traffic Management\" section of the \"Submit Issue\" guide.");
     }
 
     public static String bucketName(int bucket) {
         switch (bucket) {
-            case 5: return "豁免";
-            case 10: return "活跃";
-            case 20: return "工作集";
-            case 30: return "常用";
-            case 40: return "极少使用";
-            case 45: return "受限";
-            case 50: return "从不";
+            case 5: return "Immunity";
+            case 10: return "active";
+            case 20: return "working set";
+            case 30: return "Common Use(s)";
+            case 40: return "Rarely used";
+            case 45: return "No Products have been unmarked as public.";
+            case 50: return " Never ";
             default: return String.valueOf(bucket);
         }
     }
 
     public static Verdict gmsBucket(int bucket) {
-        if (bucket < 0) return new Verdict(Level.UNKNOWN, "无法查询", null);
+        if (bucket < 0) return new Verdict(Level.UNKNOWN, "Failed to check the data", null);
         String text = bucketName(bucket) + "（" + bucket + "）";
         if (bucket <= 30) return new Verdict(Level.OK, text, null);
-        return new Verdict(Level.FAIL, text, "GMS 被系统降级，后台联网和任务会被推迟。重启后再看，仍是这样请导出报告反馈");
+        return new Verdict(Level.FAIL, text, "GMS has been downgraded by the system, and background networking and tasks will be delayed. Check again after restarting. If the issue persists, please export the report and provide feedback.");
     }
 
     public static Verdict gmsDoze(int state) {
-        if (state < 0) return new Verdict(Level.UNKNOWN, "无法查询", null);
-        if (state > 0) return new Verdict(Level.OK, "已加入", null);
-        return new Verdict(Level.FAIL, "未加入", "系统框架的 Doze 白名单 Hook 可能没有生效，请导出报告反馈");
+        if (state < 0) return new Verdict(Level.UNKNOWN, "Failed to check the data", null);
+        if (state > 0) return new Verdict(Level.OK, "Already in", null);
+        return new Verdict(Level.FAIL, "Not yet joined.", "The Doze whitelist hook of the system framework may not be effective. Please export the report and provide feedback.");
     }
 
     public static Verdict configSync(boolean remoteLoaded, int remoteManual, boolean remoteAuto,
                                      int localManual, boolean localAuto) {
         if (!remoteLoaded) {
-            return new Verdict(Level.FAIL, "系统框架没有读到配置", "请在 FCMFix 中重新勾选一次应用，或重启手机");
+            return new Verdict(Level.FAIL, "The system framework did not read the configuration", "Please re-select the app in FCMFix or restart your phone.");
         }
         if (remoteManual != localManual || remoteAuto != localAuto) {
-            return new Verdict(Level.WARN, "系统框架的配置和这里不一致",
-                    "Android 14 以下修改配置后需要重启；其他情况请重新打开 FCMFix 再查一次");
+            return new Verdict(Level.WARN, "The configuration of the system framework is inconsistent with this",
+                    "For Android versions below 14, a restart is required after modifying the configuration; in other cases, please reopen FCMFix and check again.");
         }
-        return new Verdict(Level.OK, "已同步", null);
+        return new Verdict(Level.OK, "ALREADY SYNCED", null);
     }
 
     public static Verdict appNotify(int notify, int blockedChannels) {
@@ -149,23 +149,23 @@ public final class SelfCheck {
      */
     public static Verdict appNotify(int notify, int blockedChannels, boolean auto) {
         if (notify == 0 && auto) {
-            return new Verdict(Level.INFO, "通知已关闭",
-                    "自动放行的应用，需要它的推送时在系统设置中打开通知；不需要可在“应用”页关闭放行");
+            return new Verdict(Level.INFO, "Notifications are turned off",
+                    "For apps that require automatic permission, enable notifications in System Settings when push notifications are needed. If not needed, you can disable automatic permission on the \"Apps\" page.");
         }
-        if (notify == 0) return new Verdict(Level.FAIL, "通知已关闭", "在系统设置中打开该应用的通知");
-        if (notify < 0) return new Verdict(Level.UNKNOWN, "通知状态未知", null);
+        if (notify == 0) return new Verdict(Level.FAIL, "Notifications are turned off", "Enable notifications for this app in System Settings");
+        if (notify < 0) return new Verdict(Level.UNKNOWN, "Notification status unknown", null);
         if (blockedChannels > 0) {
-            return new Verdict(Level.WARN, blockedChannels + " 个通知类别已关闭",
-                    "这些类别里的消息不会弹出，可在该应用的通知设置中检查");
+            return new Verdict(Level.WARN, blockedChannels + "notification category(ies) have been closed",
+                    "Messages in these categories will not pop up. You can check them in the app's notification settings.");
         }
-        return new Verdict(Level.OK, "通知已开启", null);
+        return new Verdict(Level.OK, "Notifications enabled", null);
     }
 
     public static String duration(long millis) {
         long minutes = Math.max(0, millis) / 60_000;
-        if (minutes < 1) return "不到 1 分钟";
-        if (minutes < 60) return minutes + " 分钟";
-        return (minutes / 60) + " 小时 " + (minutes % 60) + " 分钟";
+        if (minutes < 1) return "Less than 1 minute";
+        if (minutes < 60) return minutes + "in minute(s)";
+        return (minutes / 60) + " Hours" + (minutes % 60) + "in minute(s)";
     }
 
     /**
@@ -181,37 +181,37 @@ public final class SelfCheck {
                                         long longestOutage, long lastSeen, long monitorStart, long now) {
         String history = fcmHistory(reconnects, outages, longestOutage);
         if (state == FCM_CONNECTED && stall != null) {
-            return new Verdict(Level.WARN, "TCP 连接 " + remote + " 还在，但" + stall + "\n" + history,
-                    "GMS 可能并没有连上 FCM，打开 FCM Diagnostics 确认；一直如此可在亮屏时切换一次网络让 GMS 重连");
+            return new Verdict(Level.WARN, "TCP Connection" + remote + "It's still there, but..." + stall + "\n" + history,
+                    "GMS may not be connected to FCM. Open FCM Diagnostics to confirm. If this persists, switch the network once when the screen is on to reconnect GMS.");
         }
         if (state == FCM_CONNECTED) {
             String age = since - monitorStart < 120_000
-                    ? "FCMFix 开始监测时已连接，至今 " + duration(now - since)
-                    : "已持续 " + duration(now - since);
-            return new Verdict(Level.OK, "已连接 " + remote + "\n" + age + "\n" + history, null);
+                    ? "FCMFix was connected when monitoring started, and remains so to date" + duration(now - since)
+                    : "Ongoing" + duration(now - since);
+            return new Verdict(Level.OK, "Already Connected" + remote + "\n" + age + "\n" + history, null);
         }
-        String down = lastSeen > 0 ? "，已断线约 " + duration(now - lastSeen) : "";
+        String down = lastSeen > 0 ? ", disconnected for about" + duration(now - lastSeen) : "";
         if (state == FCM_CONNECTING) {
-            return new Verdict(Level.WARN, "正在连接 " + remote + "，尚未成功" + down + "\n" + history,
-                    "一直停在这里，通常是 5228 端口被封或代理不通");
+            return new Verdict(Level.WARN, "Connecting..." + remote + ", not yet successful" + down + "\n" + history,
+                    "It keeps stopping here. Usually, port 5228 is blocked, or the proxy is not working.");
         }
         if (state == FCM_NONE) {
-            return new Verdict(Level.WARN, "GMS 当前没有连接 FCM 服务器（5228–5230 端口，或 443 端口的 mtalk.google.com）"
+            return new Verdict(Level.WARN, "GMS is currently not connected to the FCM server (ports 5228–5230, or mtalk.google.com on port 443)"
                             + down + "\n" + history,
-                    "刚亮屏或刚切换网络时可能正在重连，稍后再查；一直如此通常是网络问题。经代理走 443 端口时可能识别不到，以实际收到推送为准");
+                    "When the screen has just turned on or the network has just been switched, the device may be reconnecting. Please check again later. If this persists, it is usually a network issue. It may not be recognized when going through port 443 via a proxy. The actual push notification received shall prevail.");
         }
-        return new Verdict(Level.UNKNOWN, "无法检测", null);
+        return new Verdict(Level.UNKNOWN, "Can't detect", null);
     }
 
     static String fcmHistory(int reconnects, int outages, long longestOutage) {
-        if (reconnects == 0 && outages == 0) return "开机以来没有断线或重连";
-        StringBuilder text = new StringBuilder("开机以来");
-        if (reconnects > 0) text.append("重连 ").append(reconnects).append(" 次");
+        if (reconnects == 0 && outages == 0) return "No disconnections or reconnections since power-on";
+        StringBuilder text = new StringBuilder("Since power-on");
+        if (reconnects > 0) text.append("Reconnection").append(reconnects).append(" times");
         if (outages > 0) {
             if (reconnects > 0) text.append("，");
-            text.append("断线 ").append(outages).append(" 次（最长约 ").append(duration(longestOutage)).append("）");
+            text.append("disconnected").append(outages).append("times (maximum approx.").append(duration(longestOutage)).append("）");
         }
-        if (outages == 0) text.append("，每次都马上连上了新连接，不影响推送");
+        if (outages == 0) text.append(", a new connection is established immediately every time, without affecting push notifications.");
         return text.toString();
     }
 
@@ -234,8 +234,8 @@ public final class SelfCheck {
 
     public static Timeline mergeEvents(List<String> events, List<String> pushes) {
         Timeline timeline = new Timeline();
-        List<String> a = withoutNotes(events, "连接、网络、亮灭屏和 Doze 事件", timeline.notes);
-        List<String> b = withoutNotes(pushes, "推送记录", timeline.notes);
+        List<String> a = withoutNotes(events, "Connectivity, Network, Screen On/Off, and Doze Events", timeline.notes);
+        List<String> b = withoutNotes(pushes, "Push History", timeline.notes);
         int i = a.size() - 1;
         int j = b.size() - 1;
         while (i >= 0 || j >= 0) {
@@ -258,8 +258,8 @@ public final class SelfCheck {
     /** null when the bucket needs no comment. */
     public static Verdict appBucket(int bucket) {
         if (bucket == 45 || bucket == 50) {
-            return new Verdict(Level.WARN, "待机分组：" + bucketName(bucket),
-                    "系统会严格推迟该应用的后台任务，可能拉取不到消息内容。在应用的耗电设置中允许后台行为");
+            return new Verdict(Level.WARN, "Standby Group:" + bucketName(bucket),
+                    "The system will strictly postpone the app's background tasks, and it may not be able to retrieve message content. Allow background activity in the app's battery usage settings");
         }
         return null;
     }

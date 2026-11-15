@@ -81,7 +81,7 @@ public abstract class XposedModule {
                 }
             });
         } catch (Throwable e) {
-            printLog("hook ContextWrapper.attachBaseContext 失败: " + e.getMessage());
+            printLog("hook ContextWrapper.attachBaseContext failed:" + e.getMessage());
         }
     }
 
@@ -196,7 +196,7 @@ public abstract class XposedModule {
                 onUpdateConfig();
             }
         } catch (Throwable e) {
-            printLog("更新配置文件失败: " + e.getMessage());
+            printLog("Update Profile Failed" + e.getMessage());
         }
     }
 
@@ -270,7 +270,7 @@ public abstract class XposedModule {
     private static void loadConfigFromRemotePreferences() {
         SharedPreferences remotePreferences = XposedBridge.getRemotePreferences("config");
         if (remotePreferences == null) {
-            throw new IllegalStateException("remotePreferences 不可用");
+            throw new IllegalStateException("remotePreferences is not available");
         }
         java.util.Map<String, ?> values = remotePreferences.getAll();
         if (!Boolean.TRUE.equals(values.get("init"))) throw new IllegalStateException("Remote config not initialized");
@@ -282,7 +282,7 @@ public abstract class XposedModule {
     @SuppressLint("Range")
     private static void loadConfigFromContentProvider() throws Throwable {
         if (context == null) {
-            throw new IllegalStateException("context 不可用");
+            throw new IllegalStateException("Context is not available");
         }
         Cursor cursor = null;
         try {
@@ -290,7 +290,7 @@ public abstract class XposedModule {
                     Uri.parse("content://" + SELF_PACKAGE_NAME + ".provider/config"),
                     null, "all", null, null);
             if (cursor == null || cursor.getCount() == 0) {
-                throw new IllegalStateException("provider 无数据");
+                throw new IllegalStateException("No data for provider");
             }
             Set<String> allowListTmp = new HashSet<>();
             boolean init = false;
@@ -306,7 +306,7 @@ public abstract class XposedModule {
                 else if (ConfigSchema.OPTIONS.contains(key))
                     values.put(key, "1".equals(value));
             } while (cursor.moveToNext());
-            if (!init) throw new IllegalStateException("provider 未初始化");
+            if (!init) throw new IllegalStateException("Provider not initialized");
             values.put("allowList", allowListTmp);
             values.put("revision", revision);
             ConfigSnapshot snapshot = new ConfigSnapshot(values);
