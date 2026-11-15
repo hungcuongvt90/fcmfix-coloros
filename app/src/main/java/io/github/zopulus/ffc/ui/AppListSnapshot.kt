@@ -1,8 +1,8 @@
-package io.github.zopulus.ffc.ui
+package com.kooritea.fcmfix.ui
 
 internal enum class AppFilter(val title: String) {
-    ALL("Overall Minimum Value"),
-    ALLOWED("Available"),
+    ALL("All"),
+    ALLOWED("Released"),
     DISABLED("Closed")
 }
 

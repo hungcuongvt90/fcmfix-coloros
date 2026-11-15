@@ -1,13 +1,13 @@
-package io.github.zopulus.ffc.xposed;
+package com.kooritea.fcmfix.xposed;
 
 import android.annotation.SuppressLint;
 import java.lang.reflect.Method;
-import io.github.zopulus.ffc.util.ConfigSnapshot;
-import io.github.zopulus.ffc.util.ConfigSchema;
-import io.github.zopulus.ffc.util.DiagnosticLogger;
+import com.kooritea.fcmfix.util.ConfigSnapshot;
+import com.kooritea.fcmfix.util.ConfigSchema;
+import com.kooritea.fcmfix.util.DiagnosticLogger;
 import android.os.SystemClock;
-import io.github.zopulus.ffc.util.FcmTrust;
-import io.github.zopulus.ffc.util.OplusAttribution;
+import com.kooritea.fcmfix.util.FcmTrust;
+import com.kooritea.fcmfix.util.OplusAttribution;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -19,9 +19,9 @@ import android.net.Uri;
 import android.os.UserManager;
 import android.util.Log;
 
-import io.github.zopulus.ffc.libxposed.XC_MethodHook;
-import io.github.zopulus.ffc.libxposed.XposedBridge;
-import io.github.zopulus.ffc.libxposed.XposedHelpers;
+import com.kooritea.fcmfix.libxposed.XC_MethodHook;
+import com.kooritea.fcmfix.libxposed.XposedBridge;
+import com.kooritea.fcmfix.libxposed.XposedHelpers;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,7 +32,7 @@ public abstract class XposedModule {
     /**
      * 模块应用自身的包名。改动包名时请同步修改这里与 app/build.gradle 的 applicationId。
      */
-    public static final String SELF_PACKAGE_NAME = "io.github.zopulus.ffc";
+    public static final String SELF_PACKAGE_NAME = "com.kooritea.fcmfix";
 
     protected final ClassLoader classLoader;
     static final String TAG = "FcmFix";

@@ -1,4 +1,4 @@
-package io.github.zopulus.ffc.util;
+package com.kooritea.fcmfix.util;
 
 /** Trust is private to the synchronous framework invocation, never stored in Intent extras. */
 public final class FcmTrust {

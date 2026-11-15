@@ -1,4 +1,4 @@
-package io.github.zopulus.ffc.ui
+package com.kooritea.fcmfix.ui
 
 import android.os.Build
 import android.system.Os
@@ -96,16 +96,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
-import io.github.zopulus.ffc.R
+import com.kooritea.fcmfix.R
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import io.github.zopulus.ffc.FcmfixConfig
-import io.github.zopulus.ffc.FcmfixUiState
-import io.github.zopulus.ffc.InstalledApp
+import com.kooritea.fcmfix.FcmfixConfig
+import com.kooritea.fcmfix.FcmfixUiState
+import com.kooritea.fcmfix.InstalledApp
 
 private enum class MainTab(val label: String, val appBarTitle: String = label) {
     HOME("Home", "Fcmfix"),

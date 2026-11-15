@@ -1,4 +1,4 @@
-package io.github.zopulus.ffc.util;
+package com.kooritea.fcmfix.util;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import java.util.*;

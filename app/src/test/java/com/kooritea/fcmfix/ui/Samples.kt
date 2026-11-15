@@ -24,7 +24,7 @@ object Samples {
 
     fun relativeTime(time: Long): String {
         val minutes = (now - time) / MINUTE
-        return if (minutes < 60) "$minutes 分钟前" else "${minutes / 60} 小时前"
+        return if (minutes < 60) "{minutes} minutes ago [x_minutes_ago][0]" else "${minutes / 60} hours ago"
     }
 
     @Composable
@@ -44,9 +44,9 @@ object Samples {
         InstalledApp("com.whatsapp", "WhatsApp", true),
         InstalledApp("com.github.android", "GitHub", true),
         InstalledApp("com.android.chrome", "Chrome", true),
-        InstalledApp("com.tencent.mm", "微信", false),
-        InstalledApp("com.coloros.calculator", "计算器", false),
-        InstalledApp("com.oplus.notes", "便签", false),
+        InstalledApp("com.tencent.mm", "WeChat", false),
+        InstalledApp("com.coloros.calculator", "Calculator", false),
+        InstalledApp("com.oplus.notes", "notes", false),
     )
 
     private val allowed = setOf("org.telegram.messenger", "com.discord", "com.google.android.gm", "com.twitter.android")
@@ -89,14 +89,14 @@ object Samples {
             "com.twitter.android" to check(null),
         ),
         events = listOf(
-            line(600, "FCM 已连接 142.250.157.188:5228（Wi‑Fi）"),
-            line(320, "熄屏"),
-            line(300, "进入深度 Doze"),
-            line(240, "退出深度 Doze"),
-            line(200, "网络：移动数据"),
-            line(195, "FCM 重连 142.250.157.188:5228（移动数据）（旧连接持续 6 小时 45 分钟）"),
-            line(192, "网络：Wi‑Fi"),
-            line(60, "亮屏"),
+            line(600, "FCM connected to 142.250.157.188:5228 (Wi‑Fi)"),
+            line(320, "Screen Off"),
+            line(300, "Enter Deep Doze"),
+            line(240, "Exit Deep Doze"),
+            line(200, "Network: Mobile Data"),
+            line(195, "FCM reconnection 142.250.157.188:5228 (Mobile Data) (Previous connection lasted 6 hours and 45 minutes)"),
+            line(192, "Network: Wi‑Fi"),
+            line(60, "Screen On"),
         ),
         pushEvents = listOf(
             line(130, SelfCheck.EVENT_PUSH + "com.google.android.gm"),
@@ -109,7 +109,7 @@ object Samples {
         hooks = hooks + ("android" to hooks.getValue("android").copy(failed = listOf("OplusGoogleServiceFix#weakSignal: no method"))),
         gmsBucket = 45,
         fcmState = SelfCheck.FCM_CONNECTED,
-        fcmStall = "约 42 分钟没有收到任何数据（不计休眠时间）",
+        fcmStall = "No data received for approximately 42 minutes (excluding sleep time)",
         fcmOutages = 2, fcmLongestOutage = 18 * MINUTE,
         appChecks = healthySnapshot.appChecks + mapOf(
             "com.discord" to check(47, notify = 0, count = 3),

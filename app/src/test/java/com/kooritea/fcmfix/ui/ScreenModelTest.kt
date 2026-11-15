@@ -15,7 +15,7 @@ import org.junit.Test
 
 class ScreenModelTest {
     private fun report(status: StatusSnapshot) = StatusReport.build(
-        ReportEnv(null, 36, "", "13.2", null, 0, { it }, { "刚刚" }), status,
+        ReportEnv(null, 36, "", "13.2", null, 0, { it }, { "a few seconds" }), status,
     )
 
     @Test
@@ -49,21 +49,21 @@ class ScreenModelTest {
         val rows = report(
             StatusSnapshot(
                 answered = true,
-                events = listOf("…（更早的 2 条已删除）", "10-08 08:00:00 亮屏", "10-09 09:00:00 网络 Wi‑Fi"),
+                events = listOf("…(2 earlier messages deleted)", "10-08 08:00:00 Screen On", "10-09 09:00:00 Network Wi‑Fi"),
                 pushEvents = emptyList(),
             ),
         ).rows(Page.EVENTS)
         val timeline = timeline(rows)
         assertEquals(1, timeline.intro.size)
-        assertEquals(listOf("10 月 9 日", "10 月 8 日"), timeline.days.map { it.label })
-        assertEquals(listOf("网络 Wi‑Fi"), timeline.days[0].events.map { it.detail })
+        assertEquals(listOf("October 9", "October 8"), timeline.days.map { it.label })
+        assertEquals(listOf("Wi‑Fi Network"), timeline.days[0].events.map { it.detail })
         assertEquals(1, timeline.notes.size)
     }
 
     @Test
     fun overviewBlocksGroupChecksUnderTheirSection() {
         val blocks = blocks(report(StatusSnapshot()).rows(Page.OVERVIEW))
-        assertEquals(listOf("模块", "Google 服务"), blocks.filterIsInstance<Block.Header>().map { it.title })
+        assertEquals(listOf("Module", "Google Services"), blocks.filterIsInstance<Block.Header>().map { it.title })
         assertEquals(listOf(3, 1), blocks.filterIsInstance<Block.Checks>().map { it.rows.size })
         assertTrue(blocks.filterIsInstance<Block.Checks>().flatMap { it.rows }.all { it.kind == RowKind.CHECK })
     }

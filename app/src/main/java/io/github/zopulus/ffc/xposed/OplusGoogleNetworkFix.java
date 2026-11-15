@@ -1,10 +1,10 @@
-package io.github.zopulus.ffc.xposed;
+package com.kooritea.fcmfix.xposed;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import io.github.zopulus.ffc.libxposed.XC_MethodHook;
-import io.github.zopulus.ffc.libxposed.XposedBridge;
-import io.github.zopulus.ffc.libxposed.XposedHelpers;
+import com.kooritea.fcmfix.libxposed.XC_MethodHook;
+import com.kooritea.fcmfix.libxposed.XposedBridge;
+import com.kooritea.fcmfix.libxposed.XposedHelpers;
 import java.lang.reflect.Method;
 
 /** System boundaries for Google networking and sleep restoration. */
@@ -50,7 +50,7 @@ public final class OplusGoogleNetworkFix extends XposedModule {
                     protected void beforeHookedMethod(MethodHookParam param) {
                         if (!(param.args[0] instanceof android.os.Bundle)) return;
                         android.os.Bundle bundle = (android.os.Bundle) param.args[0];
-                        if (!io.github.zopulus.ffc.util.GoogleProtection.skipDeepSleepForceStop(
+                        if (!com.kooritea.fcmfix.util.GoogleProtection.skipDeepSleepForceStop(
                                 bundle.getString("pkgName"), bundle.getString("reason"), bundle.getInt("strategy", -1),
                                 bundle.getString("action"), bundle.getString("subAction"), bundle.getString("policy"),
                                 bundle.getString("caller_package"))) {
@@ -199,10 +199,10 @@ public final class OplusGoogleNetworkFix extends XposedModule {
                     java.util.List<Object> whitelist = new java.util.ArrayList<>((java.util.List<?>) param.args[0]);
                     for (String name : ColorOs17Compat.WHITELIST_PACKAGES) {
                         int uid = getTargetUidFromPackageName(name);
-                        if (uid >= 0) io.github.zopulus.ffc.util.GoogleProtection.addUid(whitelist, uid);
+                        if (uid >= 0) com.kooritea.fcmfix.util.GoogleProtection.addUid(whitelist, uid);
                     }
                     if (getBooleanConfig("rootDeepSleepNetworkWhitelist", false))
-                        io.github.zopulus.ffc.util.GoogleProtection.addUid(whitelist, 0);
+                        com.kooritea.fcmfix.util.GoogleProtection.addUid(whitelist, 0);
                     param.args[0] = whitelist;
                 }
 

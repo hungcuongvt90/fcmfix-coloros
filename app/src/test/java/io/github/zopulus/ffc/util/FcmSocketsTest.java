@@ -66,9 +66,9 @@ public class FcmSocketsTest {
         socket.lastDataRecv = 5 * 60_000;
         assertNull(FcmSockets.stall(socket));
         socket.retransmits = 3;
-        assertTrue(FcmSockets.stall(socket).contains("重传 3 次"));
+        assertTrue(FcmSockets.stall(socket).contains("Retry 3 times"));
         socket.unacked = 0;
         socket.lastDataRecv = 45 * 60_000;
-        assertTrue(FcmSockets.stall(socket).contains("45 分钟"));
+        assertTrue(FcmSockets.stall(socket).contains("45 minutes"));
     }
 }

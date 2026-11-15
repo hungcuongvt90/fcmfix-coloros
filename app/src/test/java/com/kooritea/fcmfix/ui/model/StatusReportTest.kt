@@ -18,7 +18,7 @@ class StatusReportTest {
         module = module, sdkInt = sdk, display = "PLK110_17.0.0.105", versionName = "13.2",
         localConfig = local, now = now,
         label = { "Label($it)" },
-        relativeTime = { "${(now - it) / 60_000} 分钟前" },
+        relativeTime = { "${(now - it) / 60_000} minutes ago" },
     )
 
     private val hooks = mapOf(
@@ -41,10 +41,10 @@ class StatusReportTest {
         val report = StatusReport.build(env(module = null, local = null), StatusSnapshot())
         val summary = report.summary()
         assertEquals(Level.FAIL, summary.level)
-        assertEquals("有 3 项需要处理", summary.title)
-        assertEquals("LSPosed：模块未激活", summary.detail)
+        assertEquals("3 items need to be processed", summary.title)
+        assertEquals("LSPosed: Module not activated", summary.detail)
         assertEquals(
-            listOf("模块", "LSPosed", "系统框架 Hook", "电池 Hook", "Google 服务", "FCM Diagnostics"),
+            listOf("Module", "LSPosed", "System Framework Hook", "Battery Hook", "Google Services", "FCM Diagnostics"),
             report.rows.map { it.title },
         )
         assertEquals(RowAction.FcmDiagnostics, report.rows.last().action)
@@ -55,17 +55,17 @@ class StatusReportTest {
     fun healthySummaryShowsFcmAndFramework() {
         val summary = StatusReport.build(env(), healthy).summary()
         assertEquals(Level.OK, summary.level)
-        assertEquals("一切正常", summary.title)
-        assertEquals("FCM 已连接 1.2.3.4:5228（Wi‑Fi） · 已持续 3 小时 0 分钟\n开机以来没有断线或重连", summary.detail)
-        assertEquals("LSPosed 1.10.2 · API 101 · 系统框架 2 项 · 电池 1 项", summary.footer)
+        assertEquals("ALL IS OK", summary.title)
+        assertEquals("FCM connected to 1.2.3.4:5228 (Wi‑Fi) · For 3 hours and 0 minutes\\nNo disconnections or reconnections since power-on", summary.detail)
+        assertEquals("LSPosed 1.10.2 · API 101 · System Framework 2 items · Battery 1 item", summary.footer)
     }
 
     @Test
     fun missingScopeRowAsksLsposed() {
         val report = StatusReport.build(env(module = module.copy(missingScopes = listOf("com.oplus.battery"))), healthy)
-        val scope = report.rows.single { it.title == "作用域" }
+        val scope = report.rows.single { it.title == "general.domain" }
         assertEquals(Level.FAIL, scope.level)
-        assertEquals("缺少电池", scope.detail)
+        assertEquals("Battery missing", scope.detail)
         assertEquals(RowAction.RequestScope(listOf("com.oplus.battery")), scope.action)
         assertTrue(scope.problem)
     }
@@ -75,19 +75,19 @@ class StatusReportTest {
         val status = healthy.copy(
             hooks = hooks + ("android" to HookGroups(listOf("A"), listOf("B: no method"), listOf("C: absent"))),
         )
-        val row = StatusReport.build(env(), status).rows.single { it.title == "系统框架 Hook" }
+        val row = StatusReport.build(env(), status).rows.single { it.title == "System Framework Hook" }
         assertEquals(Level.WARN, row.level)
-        assertEquals("1 项生效，1 项不适用，1 项失配\nB: no method", row.detail)
-        assertEquals("失配的项目与当前固件不匹配，请导出完整报告反馈", row.hint)
-        assertEquals("生效：A\n不适用：C: absent", row.copyExtra)
+        assertEquals("1 active, 1 not applicable, 1 mismatch\\nB: no method", row.detail)
+        assertEquals("The mismatched items do not match the current firmware. Please export the full report and provide feedback.", row.hint)
+        assertEquals("Effective: A\\nNot applicable: C: absent", row.copyExtra)
     }
 
     @Test
     fun configSyncComparesTheConfigOfTheQuery() {
-        val mismatch = StatusReport.build(env(local = LocalConfig(3, false)), healthy).rows.single { it.title == "配置同步" }
+        val mismatch = StatusReport.build(env(local = LocalConfig(3, false)), healthy).rows.single { it.title == "Configuration_synchronization" }
         assertEquals(Level.WARN, mismatch.level)
         val noLocal = StatusReport.build(env(local = null), healthy).rows
-        assertTrue(noLocal.none { it.title == "配置同步" })
+        assertTrue(noLocal.none { it.title == "Configuration_synchronization" })
     }
 
     @Test
@@ -105,19 +105,19 @@ class StatusReportTest {
         val rows = StatusReport.build(env(), status).rows(Page.APPS)
         assertEquals(
             listOf(
-                "放行的应用（5）", "需要注意（3）", "Label(off)", "Label(muted)", "Label(ok.new)",
-                "正常（2）", "Label(ok.old)", "Label(auto.off)（自动）", "",
+                "Approved Applications (5)", "Points to Note (3)", "Label(off)", "Label(muted)", "Label(ok.new)",
+                "Normal (2)", "Label(ok.old)", "Label (auto.off) (Auto)", "",
             ),
             rows.map { it.title },
         )
         val off = rows.single { it.packageName == "off" }
-        assertEquals("通知已关闭\n开机以来还没有收到推送 · 已停止，推送时由模块拉起", off.detail)
+        assertEquals("Notifications are turned off\\nNo push notifications have been received since startup · Stopped; the module will be launched when a push notification is received", off.detail)
         assertTrue(off.problem)
         assertEquals(RowAction.AppDetails("off"), off.action)
         val muted = rows.single { it.packageName == "muted" }
         assertFalse("A muted channel is often deliberate", muted.problem)
-        assertEquals("2 个通知类别已关闭\n1 分钟前收到推送 · 开机以来 1 次 · 未运行", muted.detail)
-        assertEquals("待机分组：受限", rows.single { it.packageName == "ok.new" }.detail.substringAfter(" · ").substringBefore('\n'))
+        assertEquals("2 notification categories have been turned off\\nPush notification received 1 minute ago · 1 time since startup · Not running", muted.detail)
+        assertEquals("Standby Group: Restricted", rows.single { it.packageName == "ok.new" }.detail.substringAfter(" · ").substringBefore('\n'))
         assertEquals(Level.INFO, rows.single { it.packageName == "auto.off" }.level)
         assertEquals(RowKind.NOTE, rows.last().kind)
     }
@@ -126,52 +126,52 @@ class StatusReportTest {
     fun noAllowedAppIsAWarning() {
         val report = StatusReport.build(env(), healthy.copy(apps = emptyList(), appChecks = emptyMap()))
         val rows = report.rows(Page.APPS)
-        assertEquals(listOf("放行的应用（0）", "还没有放行任何应用"), rows.map { it.title })
-        assertEquals("有 1 项需要处理", report.summary().title)
+        assertEquals(listOf("Approved Applications (0)", "No apps have been approved yet"), rows.map { it.title })
+        assertEquals("1 item needs to be addressed", report.summary().title)
         assertEquals(Level.WARN, rows[1].level)
     }
 
     @Test
     fun eventsAreGroupedByDayNewestFirst() {
         val status = healthy.copy(
-            events = listOf("…（更早的 3 条已删除）", "10-08 23:59:01 熄屏", "10-09 00:01:02 FCM 断线"),
-            pushEvents = listOf("10-09 00:00:30 推送 → com.example"),
+            events = listOf("…(3 earlier messages deleted)", "10-08 23:59:01 Screen off", "10-09 00:01:02 FCM Disconnected"),
+            pushEvents = listOf("10-09 00:00:30 Push → com.example"),
         )
         val rows = StatusReport.build(env(), status).rows(Page.EVENTS)
         assertEquals(
-            listOf("最近事件（开机以来，最新在上）", "", "10 月 9 日", "00:01:02", "00:00:30", "10 月 8 日", "23:59:01", ""),
+            listOf("Recent Events (Since Power-On, Most Recent First)", "", "October 9", "00:01:02", "00:00:30", "October 8", "23:59:01", ""),
             rows.map { it.title },
         )
         assertEquals(listOf(EventKind.FCM_DOWN, EventKind.PUSH, EventKind.SCREEN), rows.mapNotNull { it.eventKind })
-        assertEquals("连接、网络、亮灭屏和 Doze 事件：更早的 3 条已删除", rows.last().detail)
+        assertEquals("Connectivity, network, screen on/off, and Doze events: 3 earlier ones have been deleted", rows.last().detail)
     }
 
     @Test
     fun copiedTextKeepsTheIssueFormat() {
         val status = StatusSnapshot(hooks = hooks)
         val text = StatusReport.build(env(local = null), status).toText(Date(0))
-        val expected = "FCMFix 自查 " + java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.ROOT).format(Date(0)) +
-            "\n\n【模块】" +
-            "\n✓ LSPosed：已激活 · LSPosed 1.10.2" +
-            "\n✓ 作用域：系统框架、电池" +
-            "\n✓ 系统框架 Hook：2 项生效\n  生效：BroadcastFix、AutoStartFix" +
-            "\n✓ 电池 Hook：1 项生效\n  生效：ControllerCenter" +
-            "\n\n【Google 服务】" +
-            "\n• FCM Diagnostics：点击打开 GMS 自带的诊断页，看是否为 connected。亮屏时也一直 disconnected 通常是网络问题（DNS 被污染或 5228 端口被封），模块无法解决"
+        val expected = "FCMFix Self-Check" + java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.ROOT).format(Date(0)) +
+            "\\n\\n[Module]" +
+            "\\n✓ LSPosed: Activated · LSPosed 1.10.2" +
+            "\\n✓ Scope: System framework, battery" +
+            "\\n✓ System Framework Hooks: 2 enabled\\n  Enabled: BroadcastFix, AutoStartFix" +
+            "\\n✓ Battery Hook: 1 enabled\\n  Enabled: ControllerCenter" +
+            "\\n\\n[Google Services]" +
+            "\\n• FCM Diagnostics: Click to open the diagnostics page provided by GMS to see if it is connected. If it is always disconnected even when the screen is on, it is usually a network issue (DNS is compromised or port 5228 is blocked), and the module cannot resolve it."
         assertEquals(expected, text)
     }
 
     @Test
     fun androidThirteenSkipsTheHookQuery() {
         val rows = StatusReport.build(env(sdk = 33), StatusSnapshot()).rows
-        val check = rows.single { it.title == "系统检查" }
+        val check = rows.single { it.title == "WPControl" }
         assertEquals(Level.UNKNOWN, check.level)
         assertNull(rows.firstOrNull { it.title.endsWith(" Hook") })
     }
 
     @Test
     fun dayLabelFallsBackToTheRawText() {
-        assertEquals("10 月 9 日", StatusReport.dayLabel("10-09"))
+        assertEquals("October 9", StatusReport.dayLabel("10-09"))
         assertEquals("ab-cd", StatusReport.dayLabel("ab-cd"))
     }
 }

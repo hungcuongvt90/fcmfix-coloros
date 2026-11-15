@@ -1,4 +1,4 @@
-package io.github.zopulus.ffc.xposed;
+package com.kooritea.fcmfix.xposed;
 
 /** Keep each independent protection install isolated and log failures by name. */
 final class HookInstaller {

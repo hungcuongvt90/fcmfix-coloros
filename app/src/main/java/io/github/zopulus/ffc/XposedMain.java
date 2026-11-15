@@ -1,17 +1,17 @@
-package io.github.zopulus.ffc;
+package com.kooritea.fcmfix;
 
 import android.content.Context;
 
-import io.github.zopulus.ffc.libxposed.XposedBridge;
-import io.github.zopulus.ffc.libxposed.XposedHelpers;
-import io.github.zopulus.ffc.xposed.AutoStartFix;
-import io.github.zopulus.ffc.xposed.BroadcastFix;
-import io.github.zopulus.ffc.xposed.KeepNotification;
-import io.github.zopulus.ffc.xposed.OplusProxyFix;
-import io.github.zopulus.ffc.xposed.OplusGoogleNetworkFix;
-import io.github.zopulus.ffc.xposed.OplusDeviceIdleFix;
-import io.github.zopulus.ffc.xposed.OplusBatteryNetworkFix;
-import io.github.zopulus.ffc.xposed.XposedModule;
+import com.kooritea.fcmfix.libxposed.XposedBridge;
+import com.kooritea.fcmfix.libxposed.XposedHelpers;
+import com.kooritea.fcmfix.xposed.AutoStartFix;
+import com.kooritea.fcmfix.xposed.BroadcastFix;
+import com.kooritea.fcmfix.xposed.KeepNotification;
+import com.kooritea.fcmfix.xposed.OplusProxyFix;
+import com.kooritea.fcmfix.xposed.OplusGoogleNetworkFix;
+import com.kooritea.fcmfix.xposed.OplusDeviceIdleFix;
+import com.kooritea.fcmfix.xposed.OplusBatteryNetworkFix;
+import com.kooritea.fcmfix.xposed.XposedModule;
 
 import io.github.libxposed.api.XposedModuleInterface;
 
@@ -27,7 +27,7 @@ public class XposedMain extends io.github.libxposed.api.XposedModule {
         safeInit(() -> new BroadcastFix(classLoader), "BroadcastFix");
         safeInit(() -> new AutoStartFix(classLoader), "AutoStartFix");
         safeInit(() -> new KeepNotification(classLoader), "KeepNotification");
-        safeInit(() -> new io.github.zopulus.ffc.xposed.NewAppInstallReceiver(classLoader), "NewAppInstallReceiver");
+        safeInit(() -> new com.kooritea.fcmfix.xposed.NewAppInstallReceiver(classLoader), "NewAppInstallReceiver");
         safeInit(() -> new OplusProxyFix(classLoader), "OplusProxyFix");
         safeInit(() -> new OplusGoogleNetworkFix(classLoader), "OplusGoogleNetworkFix");
         safeInit(() -> new OplusDeviceIdleFix(classLoader), "OplusDeviceIdleFix");

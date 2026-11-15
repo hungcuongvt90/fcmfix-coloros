@@ -1,4 +1,4 @@
-package io.github.zopulus.ffc.util;
+package com.kooritea.fcmfix.util;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;

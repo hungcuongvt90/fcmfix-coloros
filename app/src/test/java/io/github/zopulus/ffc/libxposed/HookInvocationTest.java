@@ -1,6 +1,6 @@
-package io.github.zopulus.ffc.libxposed;
+package com.kooritea.fcmfix.libxposed;
 
-import io.github.zopulus.ffc.util.FcmTrust;
+import com.kooritea.fcmfix.util.FcmTrust;
 import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;

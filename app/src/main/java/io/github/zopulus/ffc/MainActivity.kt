@@ -1,12 +1,12 @@
-package io.github.zopulus.ffc
+package com.kooritea.fcmfix
 
-import io.github.zopulus.ffc.util.ConfigSchema.*
-import io.github.zopulus.ffc.util.ConfigSnapshot
-import io.github.zopulus.ffc.util.ConfigCodec
-import io.github.zopulus.ffc.util.ConfigFile
-import io.github.zopulus.ffc.util.ConfigSaveQueue
-import io.github.zopulus.ffc.util.ConfigPersistence
-import io.github.zopulus.ffc.util.FcmApps
+import com.kooritea.fcmfix.util.ConfigSchema.*
+import com.kooritea.fcmfix.util.ConfigSnapshot
+import com.kooritea.fcmfix.util.ConfigCodec
+import com.kooritea.fcmfix.util.ConfigFile
+import com.kooritea.fcmfix.util.ConfigSaveQueue
+import com.kooritea.fcmfix.util.ConfigPersistence
+import com.kooritea.fcmfix.util.FcmApps
 import android.database.ContentObserver
 import android.os.Handler
 import android.os.Looper
@@ -32,9 +32,9 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import io.github.zopulus.ffc.ui.FcmfixApp
-import io.github.zopulus.ffc.ui.FcmfixTheme
-import io.github.zopulus.ffc.util.IceboxUtils
+import com.kooritea.fcmfix.ui.FcmfixApp
+import com.kooritea.fcmfix.ui.FcmfixTheme
+import com.kooritea.fcmfix.util.IceboxUtils
 import io.github.libxposed.service.XposedService
 import io.github.libxposed.service.XposedServiceHelper
 import kotlinx.coroutines.Dispatchers
@@ -49,7 +49,7 @@ import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
 
 private const val TAG = "fcmfix-ui"
-private const val ACTION_UPDATE_CONFIG = "io.github.zopulus.ffc.update.config"
+private const val ACTION_UPDATE_CONFIG = "com.kooritea.fcmfix.update.config"
 
 data class FcmfixConfig(
     val allowedPackages: Set<String> = emptySet(),

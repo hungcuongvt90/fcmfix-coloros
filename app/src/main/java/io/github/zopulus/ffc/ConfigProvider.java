@@ -1,4 +1,4 @@
-package io.github.zopulus.ffc;
+package com.kooritea.fcmfix;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -8,11 +8,11 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Process;
-import io.github.zopulus.ffc.util.ConfigFile;
-import io.github.zopulus.ffc.util.ConfigSchema;
-import io.github.zopulus.ffc.util.ConfigCodec;
-import io.github.zopulus.ffc.util.ConfigSnapshot;
-import io.github.zopulus.ffc.util.IceboxUtils;
+import com.kooritea.fcmfix.util.ConfigFile;
+import com.kooritea.fcmfix.util.ConfigSchema;
+import com.kooritea.fcmfix.util.ConfigCodec;
+import com.kooritea.fcmfix.util.ConfigSnapshot;
+import com.kooritea.fcmfix.util.IceboxUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -45,7 +45,7 @@ public class ConfigProvider extends ContentProvider {
     }
     @Override public Bundle call(String method, String arg, Bundle extras) {
         if ("newAppInstalled".equals(method)) {
-            return io.github.zopulus.ffc.util.NewAppInstallStore.handle(getContext(), arg, extras);
+            return com.kooritea.fcmfix.util.NewAppInstallStore.handle(getContext(), arg, extras);
         }
         requireReader();
         if ("activateFrozenApp".equals(method)) {
@@ -53,7 +53,7 @@ public class ConfigProvider extends ContentProvider {
             Bundle result = new Bundle();
             long deadline = extras == null ? 0 : extras.getLong("deadline", 0);
             long now = android.os.SystemClock.elapsedRealtime();
-            if (!io.github.zopulus.ffc.util.ActivationDeadline.isValid(deadline, now)) return result;
+            if (!com.kooritea.fcmfix.util.ActivationDeadline.isValid(deadline, now)) return result;
             long identity = Binder.clearCallingIdentity();
             try {
                 JSONObject config = ConfigFile.read(getContext());

@@ -1,14 +1,14 @@
-package io.github.zopulus.ffc.xposed;
+package com.kooritea.fcmfix.xposed;
 
 import android.content.Intent;
 
-import io.github.zopulus.ffc.util.XposedUtils;
+import com.kooritea.fcmfix.util.XposedUtils;
 
 import java.lang.reflect.Method;
 
-import io.github.zopulus.ffc.libxposed.XC_MethodHook;
-import io.github.zopulus.ffc.libxposed.XposedBridge;
-import io.github.zopulus.ffc.libxposed.XposedHelpers;
+import com.kooritea.fcmfix.libxposed.XC_MethodHook;
+import com.kooritea.fcmfix.libxposed.XposedBridge;
+import com.kooritea.fcmfix.libxposed.XposedHelpers;
 
 public class AutoStartFix extends XposedModule {
     public AutoStartFix(ClassLoader classLoader){

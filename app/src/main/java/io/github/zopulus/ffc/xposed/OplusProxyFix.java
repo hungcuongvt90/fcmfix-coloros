@@ -1,4 +1,4 @@
-package io.github.zopulus.ffc.xposed;
+package com.kooritea.fcmfix.xposed;
 
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -7,11 +7,11 @@ import android.os.SystemClock;
 import android.os.WorkSource;
 import android.util.Pair;
 
-import io.github.zopulus.ffc.libxposed.XC_MethodHook;
-import io.github.zopulus.ffc.libxposed.XposedBridge;
-import io.github.zopulus.ffc.libxposed.XposedHelpers;
+import com.kooritea.fcmfix.libxposed.XC_MethodHook;
+import com.kooritea.fcmfix.libxposed.XposedBridge;
+import com.kooritea.fcmfix.libxposed.XposedHelpers;
 
-import io.github.zopulus.ffc.util.FcmTrust;
+import com.kooritea.fcmfix.util.FcmTrust;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -55,8 +55,8 @@ public class OplusProxyFix extends XposedModule {
      * the UID involved in the current FCM delivery unfrozen and online for the same kind of
      * short execution window Android grants to high-priority push work.
      */
-    private static final io.github.zopulus.ffc.util.FcmDeliveryWindow sFcmDeliveryWindows =
-            new io.github.zopulus.ffc.util.FcmDeliveryWindow();
+    private static final com.kooritea.fcmfix.util.FcmDeliveryWindow sFcmDeliveryWindows =
+            new com.kooritea.fcmfix.util.FcmDeliveryWindow();
 
     private static final String[] PROXY_BROADCAST_CLASSES = new String[]{
             "com.android.server.am.OplusProxyBroadcast",
@@ -672,7 +672,7 @@ public class OplusProxyFix extends XposedModule {
     private static boolean isFastFreezeEnter(Method method) {
         String[] types = java.util.Arrays.stream(method.getParameterTypes())
                 .map(Class::getName).toArray(String[]::new);
-        return io.github.zopulus.ffc.util.HansSignature.isFastFreezeEnter(
+        return com.kooritea.fcmfix.util.HansSignature.isFastFreezeEnter(
                 method.getName(), method.getReturnType().getName(), types);
     }
 

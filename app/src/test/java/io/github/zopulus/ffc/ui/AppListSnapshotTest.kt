@@ -1,4 +1,4 @@
-package io.github.zopulus.ffc.ui
+package com.kooritea.fcmfix.ui
 
 import org.junit.Assert.*
 import org.junit.Test

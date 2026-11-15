@@ -13,7 +13,7 @@ public class LogRingTest {
         ring.add("c");
         ring.add("d");
         ring.add("e");
-        assertEquals(Arrays.asList("…（更早的 2 条已丢弃）", "c", "d", "e"), ring.snapshot());
+        assertEquals(Arrays.asList("…(2 earlier messages discarded)", "c", "d", "e"), ring.snapshot());
     }
     @Test public void snapshotIsACopy() {
         LogRing ring = new LogRing(2);

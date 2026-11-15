@@ -91,7 +91,7 @@ fun appItems(state: AppUiState): List<AppItem> {
     }
 }
 
-enum class AppFilter(val label: String) {
+enum class ScreenFilter(val label: String) {
     ALL("All"), FCM("Includes FCM"), ALLOWED("Released"), ATTENTION("Needs Attention");
 
     fun matches(item: AppItem): Boolean = when (this) {
@@ -117,7 +117,7 @@ fun pushText(lastPush: Long): String = LocalRelativeTime.current(lastPush) + "Pu
 fun AppsTab(state: AppUiState, actions: AppActions, nav: Navigation, modifier: Modifier = Modifier) {
     var query by rememberSaveable { mutableStateOf("") }
     var searching by rememberSaveable { mutableStateOf(false) }
-    var filter by rememberSaveable { mutableStateOf(AppFilter.ALL) }
+    var filter by rememberSaveable { mutableStateOf(ScreenFilter.ALL) }
     val items = remember(state.apps, state.config, state.report) { appItems(state) }
     val shown = remember(items, query, filter) { items.filter { filter.matches(it) && it.matches(query) } }
     val editable = state.config != null
@@ -194,7 +194,7 @@ fun AppsTab(state: AppUiState, actions: AppActions, nav: Navigation, modifier: M
                     }
                     shown.isEmpty() -> item {
                         Text(
-                            if (filter == AppFilter.ATTENTION && query.isBlank()) "There are no issues with the approved applications." else "No matching apps",
+                            if (filter == ScreenFilter.ATTENTION && query.isBlank()) "There are no issues with the approved applications." else "No matching apps",
                             Modifier.fillMaxWidth().padding(48.dp),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -231,14 +231,14 @@ private fun AutoAllowCard(checked: Boolean, enabled: Boolean, onChange: (Boolean
 }
 
 @Composable
-private fun FilterRow(selected: AppFilter, items: List<AppItem>, onSelect: (AppFilter) -> Unit) {
+private fun FilterRow(selected: ScreenFilter, items: List<AppItem>, onSelect: (ScreenFilter) -> Unit) {
     Row(
         Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        for (filter in AppFilter.entries) {
+        for (filter in ScreenFilter.entries) {
             val count = items.count { filter.matches(it) }
-            if (filter == AppFilter.ATTENTION && count == 0) continue
+            if (filter == ScreenFilter.ATTENTION && count == 0) continue
             FilterChip(
                 selected = filter == selected,
                 onClick = { onSelect(filter) },

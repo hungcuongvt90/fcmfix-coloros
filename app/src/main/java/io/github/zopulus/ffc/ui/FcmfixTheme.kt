@@ -1,4 +1,4 @@
-package io.github.zopulus.ffc.ui
+package com.kooritea.fcmfix.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialExpressiveTheme

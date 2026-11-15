@@ -2,11 +2,11 @@ apply plugin: 'com.android.application'
 apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
 android {
-    namespace = "io.github.zopulus.ffc"
+    namespace = "com.kooritea.fcmfix"
     compileSdk 37
 
     defaultConfig {
-        applicationId "io.github.zopulus.ffc"
+        applicationId "com.kooritea.fcmfix"
         // ClassValue requires API 34; this fork supports ColorOS17 only.
         minSdkVersion 34
         targetSdkVersion 34
@@ -20,8 +20,24 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        release {
+            def signingStoreFile = project.findProperty("signingStoreFile")
+            def signingStorePassword = project.findProperty("signingStorePassword")
+            def signingKeyAlias = project.findProperty("signingKeyAlias")
+            def signingKeyPassword = project.findProperty("signingKeyPassword")
+            if (signingStoreFile && signingStorePassword && signingKeyAlias && signingKeyPassword) {
+                storeFile file(signingStoreFile)
+                storePassword signingStorePassword
+                keyAlias signingKeyAlias
+                keyPassword signingKeyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

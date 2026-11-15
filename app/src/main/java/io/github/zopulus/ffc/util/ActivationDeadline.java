@@ -1,4 +1,4 @@
-package io.github.zopulus.ffc.util;
+package com.kooritea.fcmfix.util;
 
 /** Absolute monotonic deadlines are checked again in the module process before activation. */
 public final class ActivationDeadline {

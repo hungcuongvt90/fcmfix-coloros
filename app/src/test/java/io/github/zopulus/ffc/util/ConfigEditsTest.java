@@ -1,4 +1,4 @@
-package io.github.zopulus.ffc.util;
+package com.kooritea.fcmfix.util;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

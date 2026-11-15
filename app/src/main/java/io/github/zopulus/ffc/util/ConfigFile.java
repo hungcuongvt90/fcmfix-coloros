@@ -1,4 +1,4 @@
-package io.github.zopulus.ffc.util;
+package com.kooritea.fcmfix.util;
 
 import android.content.Context;
 import android.util.AtomicFile;

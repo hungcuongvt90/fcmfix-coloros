@@ -64,25 +64,25 @@ class UiSmokeTest {
     @Test
     fun healthyStatus() {
         show(Samples.healthy())
-        compose.onNodeWithText("一切正常").assertIsDisplayed()
-        compose.onNodeWithText("LSPosed 1.10.2 · API 101 · 系统框架 14 项 · 电池 4 项").assertExists()
-        scrollTo("FCM 连接（系统框架检测）")
-        compose.onNodeWithText("FCM 连接（系统框架检测）").assertIsDisplayed()
+        compose.onNodeWithText("ALL IS OK").assertIsDisplayed()
+        compose.onNodeWithText("LSPosed 1.10.2 · API 101 · System Framework 14 Items · Battery 4 Items").assertExists()
+        scrollTo("FCM Connection (System Framework Check)")
+        compose.onNodeWithText("FCM Connection (System Framework Check)").assertIsDisplayed()
     }
 
     @Test
     fun problemsLeadWithTheFirstOneAndScopeRowAsksLsposed() {
         val actions = Recorder()
         show(Samples.problems(), actions = actions)
-        compose.onNodeWithText("有 5 项需要处理").assertIsDisplayed()
-        compose.onNodeWithText("作用域").performClick()
+        compose.onNodeWithText("5 items to be processed").assertIsDisplayed()
+        compose.onNodeWithText("general.domain").performClick()
         assertEquals(listOf("scope [com.oplus.battery]"), actions.calls)
     }
 
     @Test
     fun loading() {
         show(Samples.loading())
-        compose.onNodeWithText("正在检查…").assertIsDisplayed()
+        compose.onNodeWithText("Checking").assertIsDisplayed()
     }
 
     @Test
@@ -97,33 +97,33 @@ class UiSmokeTest {
         show(Samples.healthy(), tab = Tab.APPS, actions = actions)
         scrollTo("WhatsApp")
         compose.onNode(isToggleable() and hasAnyAncestor(hasText("WhatsApp", substring = true))).performClick()
-        compose.onNodeWithText("自动放行包含 FCM 的应用").performClick()
+        compose.onNodeWithText("Automatically allow apps that contain FCM").performClick()
         assertEquals(listOf("allow com.whatsapp true", "auto true"), actions.calls)
-        compose.onNodeWithContentDescription("搜索").performClick()
+        compose.onNodeWithContentDescription("Cari").performClick()
         compose.onNode(hasSetTextAction()).performTextInput("calc")
-        compose.onNodeWithText("计算器").assertExists()
+        compose.onNodeWithText("Calculator").assertExists()
         compose.onAllNodesWithText("Telegram").assertCountEquals(0)
     }
 
     @Test
     fun attentionFilterAndDetailSheet() {
         show(Samples.problems(), tab = Tab.APPS)
-        compose.onNodeWithText("需要注意 2").performClick()
+        compose.onNodeWithText("Points to Note 2").performClick()
         compose.onAllNodesWithText("Telegram").assertCountEquals(0)
         compose.onNodeWithText("Discord").performClick()
-        compose.onNodeWithText("放行").assertExists()
-        compose.onNodeWithText("开机以来").assertExists()
-        compose.onAllNodesWithText("通知已关闭").onFirst().assertExists()
+        compose.onNodeWithText("Release").assertExists()
+        compose.onNodeWithText("Since power-on").assertExists()
+        compose.onAllNodesWithText("Notifications are turned off").onFirst().assertExists()
     }
 
     @Test
     fun tabsAndTimeline() {
         show(Samples.healthy())
-        compose.onAllNodesWithText("时间线").onFirst().performClick()
-        compose.onNodeWithText("推送 → org.telegram.messenger").assertExists()
-        compose.onNodeWithText("推送").performClick()
-        compose.onAllNodesWithText("推送 → org.telegram.messenger").assertCountEquals(0)
-        compose.onAllNodesWithText("应用").onFirst().performClick()
+        compose.onAllNodesWithText("track").onFirst().performClick()
+        compose.onNodeWithText("Push → org.telegram.messenger").assertExists()
+        compose.onNodeWithText("Pushing").performClick()
+        compose.onAllNodesWithText("Push → org.telegram.messenger").assertCountEquals(0)
+        compose.onAllNodesWithText("Applications").onFirst().performClick()
         compose.onNodeWithText("Telegram").assertExists()
     }
 
@@ -131,8 +131,8 @@ class UiSmokeTest {
     fun settingsConfirmsAllowAll() {
         val actions = Recorder()
         show(Samples.healthy(), settings = true, actions = actions)
-        compose.onNodeWithText("放行所有包含 FCM 的应用").performClick()
-        compose.onNodeWithText("放行").performClick()
+        compose.onNodeWithText("Allow all apps that contain FCM").performClick()
+        compose.onNodeWithText("Release").performClick()
         assertEquals(listOf("allowAll"), actions.calls)
     }
 }

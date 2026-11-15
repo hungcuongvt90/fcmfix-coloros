@@ -1,4 +1,4 @@
-package io.github.zopulus.ffc.util;
+package com.kooritea.fcmfix.util;
 
 import android.content.Context;
 import android.content.Intent;
@@ -50,9 +50,9 @@ public final class NewAppInstallStore {
             result.putBoolean("acknowledged", true);
             if (changed) {
                 try {
-                    context.sendBroadcast(new Intent("io.github.zopulus.ffc.update.config"));
+                    context.sendBroadcast(new Intent("com.kooritea.fcmfix.update.config"));
                     context.getContentResolver().notifyChange(
-                            android.net.Uri.parse("content://io.github.zopulus.ffc.provider/config"), null);
+                            android.net.Uri.parse("content://com.kooritea.fcmfix.provider/config"), null);
                 } catch (Exception error) {
                     android.util.Log.w("fcmfix", "Saved installation could not notify observers", error);
                 }

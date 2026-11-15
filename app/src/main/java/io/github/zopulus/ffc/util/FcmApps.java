@@ -1,4 +1,4 @@
-package io.github.zopulus.ffc.util;
+package com.kooritea.fcmfix.util;
 
 /** Keep automatic enrollment identical to the existing app list detection. */
 public final class FcmApps {

@@ -1,4 +1,4 @@
-package io.github.zopulus.ffc.util;
+package com.kooritea.fcmfix.util;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,6 +29,14 @@ public final class ConfigSnapshot {
         }
         if (!flags.get("deepSleepGoogleWhitelist")) flags.put("rootDeepSleepNetworkWhitelist", false);
         options = Collections.unmodifiableMap(flags);
+    }
+
+    public boolean autoAllowFcm() {
+        return Boolean.TRUE.equals(options.get(ConfigSchema.KEY_AUTO_ALLOW_NEW_APPS));
+    }
+
+    public boolean allows(String packageName, Set<String> fcmPackages) {
+        return allowList.contains(packageName) || (autoAllowFcm() && fcmPackages.contains(packageName));
     }
 
     /** A no-op write must also preserve initialization and finish schema migration. */

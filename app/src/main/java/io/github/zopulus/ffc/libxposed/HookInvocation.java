@@ -1,4 +1,4 @@
-package io.github.zopulus.ffc.libxposed;
+package com.kooritea.fcmfix.libxposed;
 
 import java.util.function.Consumer;
 

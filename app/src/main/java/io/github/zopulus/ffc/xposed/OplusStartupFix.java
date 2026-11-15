@@ -333,6 +333,13 @@ public class OplusStartupFix extends XposedModule {
         return findAllowedPackageArgument(args);
     }
 
+    private String findAllowedPackageArgument(Object[] args) {
+        for (Object arg : args) {
+            if (arg instanceof String && ((String) arg).matches("[a-zA-Z][a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]+)+")) return (String) arg;
+        }
+        return null;
+    }
+
     private boolean hasStringArgument(Object[] args, String expected) {
         for (Object arg : args) {
             if (expected.equals(arg)) return true;

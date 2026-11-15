@@ -1,4 +1,4 @@
-package io.github.zopulus.ffc.xposed;
+package com.kooritea.fcmfix.xposed;
 
 import android.content.Intent;
 
@@ -6,12 +6,12 @@ import android.content.Intent;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
-import io.github.zopulus.ffc.libxposed.XC_MethodHook;
-import io.github.zopulus.ffc.libxposed.XposedBridge;
-import io.github.zopulus.ffc.libxposed.XposedHelpers;
+import com.kooritea.fcmfix.libxposed.XC_MethodHook;
+import com.kooritea.fcmfix.libxposed.XposedBridge;
+import com.kooritea.fcmfix.libxposed.XposedHelpers;
 
-import io.github.zopulus.ffc.util.IceboxUtils;
-import io.github.zopulus.ffc.util.FcmTrust;
+import com.kooritea.fcmfix.util.IceboxUtils;
+import com.kooritea.fcmfix.util.FcmTrust;
 
 public class BroadcastFix extends XposedModule {
     public BroadcastFix(ClassLoader classLoader) {

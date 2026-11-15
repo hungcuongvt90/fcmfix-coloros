@@ -1,4 +1,4 @@
-package io.github.zopulus.ffc;
+package com.kooritea.fcmfix;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,7 +12,7 @@ public class BootCompletedReceiver extends BroadcastReceiver {
         Log.i("fcmfix", "Boot completed, notify hooked processes to reload config");
         // 开机后通知已注入的 system_server 和电池进程重新加载配置文件
         try {
-            context.sendBroadcast(new Intent("io.github.zopulus.ffc.update.config"));
+            context.sendBroadcast(new Intent("com.kooritea.fcmfix.update.config"));
         } catch (Throwable e) {
             Log.e("fcmfix", "send update config broadcast failed: " + e.getMessage());
         }

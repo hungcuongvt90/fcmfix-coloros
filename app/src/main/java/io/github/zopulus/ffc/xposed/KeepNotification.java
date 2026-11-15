@@ -1,11 +1,11 @@
-package io.github.zopulus.ffc.xposed;
+package com.kooritea.fcmfix.xposed;
 
 import android.service.notification.NotificationListenerService;
 
 import java.lang.reflect.Method;
-import io.github.zopulus.ffc.libxposed.XC_MethodHook;
-import io.github.zopulus.ffc.libxposed.XposedBridge;
-import io.github.zopulus.ffc.libxposed.XposedHelpers;
+import com.kooritea.fcmfix.libxposed.XC_MethodHook;
+import com.kooritea.fcmfix.libxposed.XposedBridge;
+import com.kooritea.fcmfix.libxposed.XposedHelpers;
 
 import static com.kooritea.fcmfix.xposed.OplusHooks.runHook;
 
@@ -23,7 +23,7 @@ public class KeepNotification extends XposedModule{
             if (!"cancelAllNotificationsInt".equals(targetMethod.getName())) continue;
             String[] types = java.util.Arrays.stream(targetMethod.getParameterTypes())
                     .map(Class::getName).toArray(String[]::new);
-            int finalReason_args_index = io.github.zopulus.ffc.util.NotificationSignature.reasonIndex(
+            int finalReason_args_index = com.kooritea.fcmfix.util.NotificationSignature.reasonIndex(
                     targetMethod.getReturnType().getName(), types);
             final int finalPkg_args_index = 2;
             if (finalReason_args_index < 0) {

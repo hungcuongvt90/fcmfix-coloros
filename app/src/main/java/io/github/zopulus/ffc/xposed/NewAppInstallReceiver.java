@@ -1,4 +1,4 @@
-package io.github.zopulus.ffc.xposed;
+package com.kooritea.fcmfix.xposed;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -6,8 +6,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
-import io.github.zopulus.ffc.util.NewAppAutoAllow;
-import io.github.zopulus.ffc.util.RetryingTask;
+import com.kooritea.fcmfix.util.NewAppAutoAllow;
+import com.kooritea.fcmfix.util.RetryingTask;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 

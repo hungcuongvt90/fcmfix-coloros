@@ -1,4 +1,4 @@
-package io.github.zopulus.ffc.xposed;
+package com.kooritea.fcmfix.xposed;
 
 import android.content.Intent;
 import android.content.Context;
@@ -10,14 +10,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import io.github.zopulus.ffc.util.GoogleProtection;
-import io.github.zopulus.ffc.util.RetryingTask;
+import com.kooritea.fcmfix.util.GoogleProtection;
+import com.kooritea.fcmfix.util.RetryingTask;
 import java.lang.reflect.Constructor;
 import android.content.pm.PackageManager;
 
-import io.github.zopulus.ffc.libxposed.XC_MethodHook;
-import io.github.zopulus.ffc.libxposed.XposedBridge;
-import io.github.zopulus.ffc.libxposed.XposedHelpers;
+import com.kooritea.fcmfix.libxposed.XC_MethodHook;
+import com.kooritea.fcmfix.libxposed.XposedBridge;
+import com.kooritea.fcmfix.libxposed.XposedHelpers;
 
 import java.lang.reflect.Method;
 
@@ -41,8 +41,8 @@ public class OplusBatteryNetworkFix extends XposedModule {
     }, this::tryReleaseExistingRestriction, 1000, 3000);
     private static volatile String policyState = "pending", policyDetail = "Awaiting OEM policy verification";
 
-    @Override protected void onConfigLoaded(io.github.zopulus.ffc.util.ConfigSnapshot previous,
-            io.github.zopulus.ffc.util.ConfigSnapshot current) {
+    @Override protected void onConfigLoaded(com.kooritea.fcmfix.util.ConfigSnapshot previous,
+            com.kooritea.fcmfix.util.ConfigSnapshot current) {
         if (current != null && (previous == null || "pending".equals(policyState) || "failed".equals(policyState)))
             requestRestrictionVerification();
     }

@@ -1,4 +1,4 @@
-package io.github.zopulus.ffc.util;
+package com.kooritea.fcmfix.util;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -32,7 +32,7 @@ public class IceboxUtils extends BroadcastReceiver {
             Bundle request = new Bundle();
             request.putLong("deadline", deadline);
             Bundle result = context.getContentResolver().call(
-                    Uri.parse("content://io.github.zopulus.ffc.provider"), "activateFrozenApp", target, request);
+                    Uri.parse("content://com.kooritea.fcmfix.provider"), "activateFrozenApp", target, request);
             return result != null && result.getBoolean("enabled", false);
         }, 1500);
     }

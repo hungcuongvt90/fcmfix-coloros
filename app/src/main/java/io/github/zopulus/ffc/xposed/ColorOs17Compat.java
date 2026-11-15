@@ -1,7 +1,7 @@
-package io.github.zopulus.ffc.xposed;
+package com.kooritea.fcmfix.xposed;
 
 import android.os.Handler;
-import io.github.zopulus.ffc.libxposed.XposedHelpers;
+import com.kooritea.fcmfix.libxposed.XposedHelpers;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;

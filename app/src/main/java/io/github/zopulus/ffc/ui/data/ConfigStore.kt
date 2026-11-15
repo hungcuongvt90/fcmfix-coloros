@@ -55,7 +55,7 @@ object ConfigStore {
         return ModuleConfig(
             allowList = pref.getStringSet("allowList", null).orEmpty().toSet(),
             excludeList = pref.getStringSet("excludeList", null).orEmpty().toSet(),
-            autoAllowFcm = pref.getBoolean(ConfigSnapshot.AUTO_ALLOW_FCM, false),
+            autoAllowFcm = pref.getBoolean("autoAllowFcm", false),
             keepNotifications = pref.getBoolean("disableAutoCleanNotification", false),
             iceBox = pref.getBoolean("includeIceBoxDisableApp", false),
         )
@@ -70,7 +70,7 @@ object ConfigStore {
             .putBoolean("init", true)
             .putStringSet("allowList", HashSet(config.allowList))
             .putStringSet("excludeList", HashSet(config.excludeList))
-            .putBoolean(ConfigSnapshot.AUTO_ALLOW_FCM, config.autoAllowFcm)
+            .putBoolean("autoAllowFcm", config.autoAllowFcm)
             .putBoolean("disableAutoCleanNotification", config.keepNotifications)
             .putBoolean("includeIceBoxDisableApp", config.iceBox)
             // Left behind by the removed no-response notification option.
