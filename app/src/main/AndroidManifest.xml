@@ -2,15 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-<<<<<<< HEAD
-    <!-- Normal permission, no network access: the FCM connection monitor in system_server
-         follows default-network changes for the self-check timeline. -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-=======
     <permission android:name="${applicationId}.permission.CONFIG" android:protectionLevel="signature" />
     <uses-permission android:name="${applicationId}.permission.CONFIG" />
->>>>>>> 53450a0 (Apply ColorOS17 customization and MD3E UI)
     <uses-permission
         android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
@@ -35,18 +28,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-<<<<<<< HEAD
-
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.reports"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/report_paths" />
-        </provider>
-=======
         <activity-alias
             android:name=".LauncherAlias"
             android:targetActivity=".MainActivity"
@@ -72,7 +53,6 @@
             android:name=".ConfigProvider"
             android:authorities="${applicationId}.provider"
             android:exported="true" />
->>>>>>> 53450a0 (Apply ColorOS17 customization and MD3E UI)
     </application>
 
 </manifest>
