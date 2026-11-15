@@ -47,15 +47,15 @@ object ReportExporter {
             reader.join(5000)
             val head = readHead(report)
             if (!head.startsWith("FCMFix report")) {
-                throw Failure(if (head.isBlank()) "没有获得 Root 权限" else head.trim())
+                throw Failure(if (head.isBlank()) "Root permission not granted" else head.trim())
             }
             FileOutputStream(report, true).use { it.write(appendix.toByteArray()) }
             report
         } catch (e: IOException) {
-            throw Failure("无法执行 su：" + e.message)
+            throw Failure("Unable to execute su:" + e.message)
         } catch (e: InterruptedException) {
             Thread.currentThread().interrupt()
-            throw Failure("已中断")
+            throw Failure("Canceled")
         }
     }
 
@@ -63,9 +63,9 @@ object ReportExporter {
     fun logsText(logs: Bundle): String {
         val text = StringBuilder()
         for ((process, label) in StatusSnapshot.PROCESSES) {
-            text.append("\n== FCMFix 模块日志（").append(label).append("，由模块自身保留，不受 logcat 缓冲区限制）\n")
+            text.append("\\n== FCMFix Module Log (").append(label).append(", retained by the module itself and not subject to logcat buffer limits)\\n")
             val lines = logLines(logs, process + HookStatus.LOGS_SUFFIX)
-            if (lines == null) text.append("未响应：模块未在该进程加载\n") else lines.forEach { text.append(it).append('\n') }
+            if (lines == null) text.append("No response: The module is not loaded in this process.\\n") else lines.forEach { text.append(it).append('\n') }
         }
         return text.toString()
     }
@@ -76,7 +76,7 @@ object ReportExporter {
             return try {
                 HookStatus.unpack(packed)
             } catch (e: IOException) {
-                listOf("无法解压日志：$e")
+                listOf("Unable to extract log: $e")
             }
         }
         return logs.getStringArrayList(key)

@@ -127,7 +127,7 @@ public abstract class XposedModule {
             try {
                 onUpdateConfig();
             } catch (Throwable e) {
-                printLog("更新配置文件失败: " + e.getMessage());
+                printLog("Update Profile Failed" + e.getMessage());
             }
         }
     }
@@ -267,7 +267,7 @@ public abstract class XposedModule {
                         }
                         onUninstallFcmfix();
                         if ("android".equals(getSelfPackageName())) {
-                            printLog("Fcmfix已卸载，重启后停止生效。");
+                            printLog("Fcmfix has been uninstalled and will stop taking effect after reboot.");
                         }
                     }
                 }

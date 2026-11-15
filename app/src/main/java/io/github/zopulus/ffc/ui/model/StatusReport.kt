@@ -62,7 +62,7 @@ class ReportEnv(
     val localConfig: LocalConfig?,
     val now: Long,
     val label: (String) -> String,
-    /** DateUtils.getRelativeTimeSpanString on a device, e.g. "5 分钟前". */
+    /** DateUtils.getRelativeTimeSpanString on a device, e.g. "5 minutes ago". */
     val relativeTime: (Long) -> String,
 )
 
@@ -77,7 +77,7 @@ class AppVerdict private constructor(val level: Level, val notify: Verdict, val 
 
     val hint: String? get() = notify.hint ?: bucket?.hint
 
-    /** Counted under "需要注意". */
+    /** Counted under "Needs Attention". */
     val attention: Boolean get() = level == Level.FAIL || level == Level.WARN
 
     companion object {
@@ -115,28 +115,28 @@ class StatusReport private constructor(
         val problems = problems
         if (problems.isNotEmpty()) {
             val level = if (problems.any { it.level == Level.FAIL }) Level.FAIL else Level.WARN
-            val title = if (problems.size == 1) "有 1 项需要处理" else "有 ${problems.size} 项需要处理"
+            val title = if (problems.size == 1) "1 item needs to be addressed" else "${problems.size} issues need to be addressed"
             val first = problems[0]
             return Summary(level, title, first.title + "：" + first.detail.substringBefore('\n'), null)
         }
-        if (!status.answered) return Summary(Level.UNKNOWN, "系统框架没有响应", null, null)
+        if (!status.answered) return Summary(Level.UNKNOWN, "The system framework is not responding.", null, null)
         val fcm = status.fcmVerdict(env.now).text.split("\n")
         val detail = if (fcm.size >= 3) "FCM " + fcm[0] + " · " + fcm[1] + "\n" + fcm[2] else null
-        return Summary(Level.OK, "一切正常", detail, okFooter())
+        return Summary(Level.OK, "ALL IS OK", detail, okFooter())
     }
 
-    /** e.g. "LSPosed 1.10.2 · API 101 · 系统框架 14 项 · 电池 4 项". */
+    /** e.g. "LSPosed 1.10.2 · API 101 · System Framework 14 Items · Battery 4 Items". */
     private fun okFooter(): String? {
         val module = env.module ?: return null
         val parts = mutableListOf(module.framework + " · API " + module.apiVersion)
         for ((process, label) in StatusSnapshot.PROCESSES) {
-            status.hooks(process).active?.let { parts += "$label ${it.size} 项" }
+            status.hooks(process).active?.let { parts += "$label ${it.size} items" }
         }
         return parts.joinToString(" · ")
     }
 
     fun toText(time: Date = Date()): String {
-        val text = StringBuilder("FCMFix 自查 ")
+        val text = StringBuilder("FCMFix Self-Check")
             .append(SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ROOT).format(time))
         for (row in rows) {
             when (row.kind) {
@@ -166,9 +166,9 @@ class StatusReport private constructor(
             else -> "•"
         }
 
-        /** "10-09" → "10 月 9 日". */
+        /** "10-09" → "October 9". */
         fun dayLabel(monthDay: String): String = try {
-            "${monthDay.substring(0, 2).toInt()} 月 ${monthDay.substring(3, 5).toInt()} 日"
+            "${monthDay.substring(0, 2).toInt()} Month ${monthDay.substring(3, 5).toInt()} Day"
         } catch (e: RuntimeException) {
             monthDay
         }
@@ -179,43 +179,43 @@ class StatusReport private constructor(
         private var page = Page.OVERVIEW
 
         fun build(): List<Row> {
-            section("模块")
+            section("Module")
             val module = env.module
             if (module == null) {
-                add(Level.FAIL, "LSPosed", "模块未激活", "在 LSPosed 中启用 FCMFix，勾选系统框架和电池后重启手机")
+                add(Level.FAIL, "LSPosed", "Module not activated", "Enable FCMFix in LSPosed, check System Framework and Battery, then restart your phone.")
             } else {
-                add(Level.OK, "LSPosed", "已激活 · " + module.framework, null)
+                add(Level.OK, "LSPosed", "Activated" + module.framework, null)
                 addScopeRow(module)
             }
             if (env.sdkInt < 34) {
-                add(Level.UNKNOWN, "系统检查", "需要 Android 14 及以上", null)
+                add(Level.UNKNOWN, "WPControl", "Requires Android 14 or later", null)
             } else {
                 for ((process, label) in StatusSnapshot.PROCESSES) addHookRow(process, label)
             }
             if (status.answered) addConfigRows()
 
-            section("Google 服务")
+            section("Google Services")
             if (status.answered) {
-                add("FCM 连接（系统框架检测）", status.fcmVerdict(env.now))
-                add("GMS 联网策略", SelfCheck.gmsPolicy(status.gmsPolicy))
-                add("GMS 待机分组", SelfCheck.gmsBucket(status.gmsBucket))
-                add("GMS 电池优化白名单", SelfCheck.gmsDoze(status.gmsDoze))
+                add("FCM Connection (System Framework Check)", status.fcmVerdict(env.now))
+                add("GMS Networking Policy", SelfCheck.gmsPolicy(status.gmsPolicy))
+                add("GMS Standby Group", SelfCheck.gmsBucket(status.gmsBucket))
+                add("GMS Battery Optimization Whitelist", SelfCheck.gmsDoze(status.gmsDoze))
             }
             add(
-                Level.INFO, "FCM Diagnostics", "点击打开 GMS 自带的诊断页，看是否为 connected。" +
-                    "亮屏时也一直 disconnected 通常是网络问题（DNS 被污染或 5228 端口被封），模块无法解决",
+                Level.INFO, "FCM Diagnostics", "Click to open the diagnostic page provided by GMS to see if it is connected." +
+                    "When the screen is on, it is always disconnected. This is usually a network issue (DNS is polluted or port 5228 is blocked), and the module cannot resolve it.",
                 null, RowAction.FcmDiagnostics, problem = false,
             )
 
             if (!status.answered) return rows
-            section("系统信息（反馈问题时附上）")
+            section("System Information (to be attached when submitting feedback)")
             val info = StringBuilder()
                 .append("FCMFix ").append(env.versionName)
                 .append("\nsdk=").append(env.sdkInt)
                 .append("\ndisplay=").append(env.display)
             status.settings?.forEach { info.append('\n').append(it) }
             status.ignoreGmsUserSet?.let { info.append("\nIgnoreGmsUserSet=").append(it) }
-            add(Level.INFO, "版本与系统设置", info.toString(), null)
+            add(Level.INFO, "Version and System Settings", info.toString(), null)
 
             page = Page.APPS
             addAppRows()
@@ -244,13 +244,13 @@ class StatusReport private constructor(
         private fun addScopeRow(module: ModuleInfo) {
             val missing = module.missingScopes
             when {
-                missing == null -> add(Level.UNKNOWN, "作用域", "无法读取", null)
-                missing.isEmpty() -> add(Level.OK, "作用域", "系统框架、电池", null)
+                missing == null -> add(Level.UNKNOWN, "general.domain", "Unable to read on", null)
+                missing.isEmpty() -> add(Level.OK, "general.domain", "System frame, battery", null)
                 else -> {
-                    val labels = missing.map { if (it == "system") "系统框架" else "电池" }
+                    val labels = missing.map { if (it == "system") "System framework" else "BATTERY" }
                     add(
-                        Level.FAIL, "作用域", "缺少" + labels.joinToString("、"),
-                        "点击向 LSPosed 申请添加，确认后重启手机", RowAction.RequestScope(missing), problem = true,
+                        Level.FAIL, "general.domain", "missing? " + labels.joinToString("、"),
+                        "Tap to request to add to LSPosed, and restart your phone after confirmation.", RowAction.RequestScope(missing), problem = true,
                     )
                 }
             }
@@ -258,39 +258,39 @@ class StatusReport private constructor(
 
         private fun addHookRow(process: String, label: String) {
             val (active, failed, skipped) = status.hooks(process)
-            val skippedSummary = if (skipped.isNullOrEmpty()) "" else "，${skipped.size} 项不适用"
+            val skippedSummary = if (skipped.isNullOrEmpty()) "" else ", ${skipped.size} items not applicable"
             var copyExtra: String? = null
-            if (!active.isNullOrEmpty()) copyExtra = "生效：" + active.joinToString("、")
+            if (!active.isNullOrEmpty()) copyExtra = "Valid:" + active.joinToString("、")
             if (!skipped.isNullOrEmpty()) {
-                copyExtra = (if (copyExtra == null) "" else copyExtra + "\n") + "不适用：" + skipped.joinToString("；")
+                copyExtra = (if (copyExtra == null) "" else copyExtra + "\n") + "Not Applicable:" + skipped.joinToString("；")
             }
             val title = "$label Hook"
             when {
                 active == null || failed == null -> add(
-                    Level.FAIL, title, "未加载", "确认已勾选${label}作用域，并在勾选后重启过手机", copyExtra = copyExtra,
+                    Level.FAIL, title, "GD not loaded", "Confirm that the ${label} scope has been selected and that the phone has been restarted after selection.", copyExtra = copyExtra,
                 )
                 failed.isNotEmpty() -> add(
                     Level.WARN, title,
-                    "${active.size} 项生效$skippedSummary，${failed.size} 项失配\n" + failed.joinToString("\n"),
-                    "失配的项目与当前固件不匹配，请导出完整报告反馈", copyExtra = copyExtra,
+                    "${active.size} items active$skippedSummary, ${failed.size} items mismatched\\n" + failed.joinToString("\n"),
+                    "The mismatched items do not match the current firmware. Please export the full report and provide feedback.", copyExtra = copyExtra,
                 )
-                else -> add(Level.OK, title, "${active.size} 项生效$skippedSummary", null, copyExtra = copyExtra)
+                else -> add(Level.OK, title, "${active.size} items activated$skippedSummary", null, copyExtra = copyExtra)
             }
         }
 
         private fun addConfigRows() {
             env.localConfig?.let { local ->
                 add(
-                    "配置同步", SelfCheck.configSync(
+                    "Configuration_synchronization", SelfCheck.configSync(
                         status.configLoaded, status.manualCount, status.autoAllow, local.manualCount, local.autoAllow,
                     ),
                 )
             }
             if (status.autoAllow) {
                 if (status.fcmPackages < 0) {
-                    add(Level.WARN, "自动放行", "已开启，系统框架还没有完成应用扫描", "稍后再查一次；一直如此请重启手机")
+                    add(Level.WARN, "Automatic Clearance", "Enabled, but the system framework has not yet completed the app scan", "Check again later; if the issue persists, please restart your phone.")
                 } else {
-                    add(Level.INFO, "自动放行", "已开启，系统框架识别到 ${status.fcmPackages} 个包含 FCM 的应用", null)
+                    add(Level.INFO, "Automatic Clearance", "Enabled. The system framework has identified ${status.fcmPackages} apps containing FCM.", null)
                 }
             }
         }
@@ -298,9 +298,9 @@ class StatusReport private constructor(
         /** Problems first, each group by the most recent push. */
         private fun addAppRows() {
             val apps = status.apps ?: return
-            section("放行的应用（${apps.size}）")
+            section("Allowed Apps (${apps.size})")
             if (apps.isEmpty()) {
-                add(Level.WARN, "还没有放行任何应用", "在“应用”页放行需要推送的应用，或开启“自动放行包含 FCM 的应用”", null)
+                add(Level.WARN, "No apps have been approved yet", "On the \"Apps\" page, allow the apps that need to be pushed, or enable \"Automatically allow apps that contain FCM\"", null)
                 return
             }
             val attention = ArrayList<Pair<Row, Long>>()
@@ -309,13 +309,13 @@ class StatusReport private constructor(
                 val app = status.appChecks[name] ?: continue
                 val verdict = AppVerdict.of(app)
                 var label = env.label(name)
-                if (app.auto) label += "（自动）"
-                val pushes = if (app.lastPush == 0L) "开机以来还没有收到推送"
-                else env.relativeTime(app.lastPush) + "收到推送 · 开机以来 " + app.pushCount + " 次"
+                if (app.auto) label += "(automatic)"
+                val pushes = if (app.lastPush == 0L) "No push notifications received since startup"
+                else env.relativeTime(app.lastPush) + "Push Notifications Received · Since Power-On" + app.pushCount + " times"
                 val process = when {
-                    app.running -> "运行中"
-                    app.stopped -> "已停止，推送时由模块拉起"
-                    else -> "未运行"
+                    app.running -> "In operation"
+                    app.stopped -> "Stopped, pulled up by the module when pushed"
+                    else -> "not running smoothly."
                 }
                 val detail = (verdict.text?.let { it + "\n" } ?: "") + pushes + " · " + process
                 // Only a fully disabled app counts in the summary; a muted channel is often deliberate.
@@ -327,26 +327,26 @@ class StatusReport private constructor(
             }
             val order = compareBy<Pair<Row, Long>> { AppVerdict.rank(it.first.level) }.thenByDescending { it.second }
             if (attention.isNotEmpty()) {
-                section("需要注意（${attention.size}）")
+                section("Attention required (${attention.size})")
                 rows += attention.sortedWith(order).map { it.first }
             }
             if (normal.isNotEmpty()) {
-                section("正常（${normal.size}）")
+                section("Normal (${normal.size})")
                 rows += normal.sortedWith(order).map { it.first }
             }
-            note("“收到推送”表示 GMS 已把消息交给该应用。收到了推送却没有弹出通知，问题通常在应用自己的通知设置或应用本身")
+            note("\"Push received\" means that GMS has delivered the message to the app. If a push notification is received but no notification pops up, the problem is usually with the app's own notification settings or the app itself.")
         }
 
         /** One row per event, newest first, under a section for each day. */
         private fun addEventRows() {
             val events = status.events ?: return
-            section("最近事件（开机以来，最新在上）")
+            section("Recent Events (Since Power-On, Most Recent First)")
             val timeline = SelfCheck.mergeEvents(events, status.pushEvents)
             if (timeline.lines.isEmpty()) {
-                note("熄屏、深度 Doze、网络切换、FCM 连接变化和收到推送会记录在这里")
+                note("Screen off, Deep Doze, network switching, FCM connection changes, and received push notifications will be recorded here.")
                 return
             }
-            note("FCM 断线前后是否刚熄屏、进入深度 Doze 或切换网络，通常能说明原因。“重连”是旧连接换成了新连接，中间不影响推送")
+            note("Whether the screen was just turned off, entered deep Doze, or switched networks before or after the FCM disconnection usually explains the cause. \"Reconnection\" means that the old connection is replaced by a new one, and the push notification is not affected in the meantime.")
             var day: String? = null
             for (line in timeline.lines) {
                 // "MM-dd HH:mm:ss text"
@@ -354,7 +354,7 @@ class StatusReport private constructor(
                 val lineDay = if (stamped) line.substring(0, 5) else ""
                 if (lineDay != day) {
                     day = lineDay
-                    section(if (stamped) dayLabel(lineDay) else "其他")
+                    section(if (stamped) dayLabel(lineDay) else "Other")
                 }
                 val text = if (stamped) line.substring(15) else line
                 rows += Row(

@@ -76,7 +76,7 @@ object ConfigStore {
             // Left behind by the removed no-response notification option.
             .remove("noResponseNotification")
             .commit()
-        check(saved) { "配置写入失败" }
+        check(saved) { "Configuration write failed" }
         if (Build.VERSION.SDK_INT < 34) return false
         context.sendBroadcast(
             Intent(context.packageName + ".update.config"), null,

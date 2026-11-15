@@ -64,7 +64,7 @@ data class StatusSnapshot(
     )
 
     companion object {
-        val PROCESSES = listOf("android" to "系统框架", "com.oplus.battery" to "电池")
+        val PROCESSES = listOf("android" to "System framework", "com.oplus.battery" to "BATTERY")
 
         fun from(status: Bundle): StatusSnapshot {
             val apps = status.getStringArrayList(SelfCheck.KEY_APPS)
